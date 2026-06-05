@@ -28,7 +28,7 @@ tree. Kept here so they survive beyond any single working session.
 
 ## Updating sourced skills
 
-`skill-sources.json` is the source-of-truth manifest; `update-sourced-skills.ipynb`
+`skill-plugin-sources.json` is the source-of-truth manifest; `update-sourced-skills.ipynb`
 is the tool. The notebook shallow-clones each upstream repo, diffs its `subpath`
 against the local folder, prints a per-skill change-list (with diffs), and lets
 you apply or disregard each update.
@@ -57,6 +57,19 @@ Design rules baked into the tool:
 
 Both are intentional trade-offs (never-delete protects local additions), not
 bugs — recorded here so they're not rediscovered later.
+
+## Recent plugin sync work
+
+- Added three new external plugin packages to the repo:
+  - `plugins/fabric-skills` from `microsoft/skills-for-fabric`
+  - `plugins/powerbi` and `plugins/fabric` from `RuiRomano/powerbi-agentic-plugins`
+  - `plugins/reports` from `data-goblin/power-bi-agentic-development`
+- Copied the plugin skill folders into the top-level `skills/` directory so the
+  repo can treat them as individual vendored skills.
+- Updated `plugins/README.md` and `skills/README.md` with attribution for the
+  new plugin sources and skill names.
+- Extended `skill-plugin-sources.json` to track the new plugin directories, so
+  `update-sourced-skills.ipynb` can sync them in the future.
 
 ## Local environment notes
 

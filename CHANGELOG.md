@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Added
-- `skill-sources.json` manifest and `update-sourced-skills.ipynb` notebook to
+- `skill-plugin-sources.json` manifest and `update-sourced-skills.ipynb` notebook to
   check externally-sourced skills for upstream updates, show a per-skill
   change-list with diffs, and apply or disregard each one.
 - Vendored MIT `LICENSE` into each Matt Pocock skill folder (`caveman`,
