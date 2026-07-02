@@ -1,0 +1,53 @@
+{
+  "skill_name": "github-mastery",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just created the fabric-apps monorepo with fabric-app-campus-profile as the first app. I need a root-level .gitignore that covers Node apps, Vite builds, environment variables, and Rayfin configs. What should I include?",
+      "expected_output": "A complete .gitignore file with sections for Node/npm, build artifacts (dist, .vite), environment files (.env*, rayfin/.env*), Rayfin deployment files, IDE/OS artifacts, and comments explaining each section.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "User describes a fix: 'I fixed the VegaVisual height override issue in the print pipeline by updating the columnMetadata format string instead of the spec.' What should the commit message be?",
+      "expected_output": "Formatted commit message: 'fix(campus-profile): override VegaVisual format via columnMetadata instead of spec' with optional body explaining why this approach prevents silent failures.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm working on an ed-fi-pipelines repo (PySpark, Spark SQL, T-SQL). I need a PR template that enforces data scope tracking for FERPA compliance. Create it.",
+      "expected_output": "PR template with title format including domain tags, body sections for Description/Changes/Testing/Data Scope, explicit FERPA audit trail field, and examples using ed-fi contexts.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "How should I name my feature branches in the fabric-apps monorepo? What's the convention?",
+      "expected_output": "Branch naming pattern: 'feat/scope/description' with examples like 'feat/campus-profile/print-layout-fix', 'feat/infra/ci-workflow', plus brief branch strategy doc explaining protected branches (main=prod, staging=pre-prod).",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "I need to set up GitHub Actions for the fabric-apps monorepo. It's a Node/TypeScript + Vite app with Vitest tests. Should run checks on every PR, deploy to staging on staging branch, and to production on main merge.",
+      "expected_output": "Three GitHub workflow files (.github/workflows/): test.yml (lint+build+test on PR), deploy-staging.yml (triggered by push to staging), deploy-prod.yml (triggered by push to main). Include env setup, conditional runs, and artifact handling.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Review my PR before I merge it. I touched: src/queries/campus/digital-resource.dax, src/components/digital-resources-section.tsx, and src/print-compact.css in the campus-profile app. What should I check?",
+      "expected_output": "Context-aware code review checklist tailored to the campus-profile app: Correctness (DAX syntax, React/TypeScript), Readability, Architecture (follows Direct Lake pattern, respects rate-limiting), Security (no credential leaks), Data Sensitivity (FERPA-safe aggregation), and Print CSS mechanics (fixed Vega dims, constrainChartsForPrint usage).",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "I want to add a second app (fabric-app-staffing-profile) to the fabric-apps monorepo. What's the setup checklist?",
+      "expected_output": "Step-by-step guide: Create folder structure (fabric-app-staffing-profile/src, package.json, etc.), add .claude/CLAUDE.md (project instructions), update root .gitignore if needed, add app to root CI workflow (test all touched apps), create README for the new app, document how to run/deploy.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "I need to flag something in a PR review: the code is committing a rayfin/.env file with workspace credentials. What should I do?",
+      "expected_output": "Immediate security flag: 'Credential leak detected — rayfin/.env should NEVER be committed. Add to .gitignore immediately. If already pushed, rotate credentials in Fabric workspace. Recommend: npm audit --fix, .gitignore pattern: rayfin/.env*'",
+      "files": []
+    }
+  ]
+}

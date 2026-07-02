@@ -1,0 +1,625 @@
+{
+  "format_version": 2,
+  "_comment": "Source-of-truth manifest for externally-sourced skills. Drives update-sourced-skills.ipynb and sync_orchestrator.ipynb. 'last_synced_sha' is informational and is stamped by the notebook when an update is applied.",
+  "ignore": [".git", ".github", ".gitignore", ".DS_Store", "node_modules", ".vscode", ".idea"],
+  "skills": [
+    {
+      "name": "grill-me",
+      "local": "skills/grill-me",
+      "repo": "https://github.com/mattpocock/skills.git",
+      "branch": "main",
+      "subpath": "skills/productivity/grill-me",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Matt Pocock",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "grill-with-docs",
+      "local": "skills/grill-with-docs",
+      "repo": "https://github.com/mattpocock/skills.git",
+      "branch": "main",
+      "subpath": "skills/engineering/grill-with-docs",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Matt Pocock",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "handoff",
+      "local": "skills/handoff",
+      "repo": "https://github.com/mattpocock/skills.git",
+      "branch": "main",
+      "subpath": "skills/productivity/handoff",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Matt Pocock",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "local": "skills/improve-codebase-architecture",
+      "repo": "https://github.com/mattpocock/skills.git",
+      "branch": "main",
+      "subpath": "skills/engineering/improve-codebase-architecture",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Matt Pocock",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "mbti-persona",
+      "local": "skills/mbti-persona",
+      "repo": "https://github.com/ChangyuanYU/mbti-persona-skill.git",
+      "branch": "main",
+      "subpath": "mbti-persona",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "ChangyuanYU",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "task-observer",
+      "local": "skills/one-skill-to-rule-them-all",
+      "repo": "https://github.com/rebelytics/one-skill-to-rule-them-all.git",
+      "branch": "main",
+      "subpath": "",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Eoghan Henn / rebelytics.com",
+      "license": "CC BY 4.0",
+      "last_synced_sha": null
+    },
+    {
+      "name": "fabric-skills",
+      "local": "plugins/fabric-skills",
+      "repo": "https://github.com/microsoft/skills-for-fabric.git",
+      "branch": "main",
+      "subpath": "plugins/fabric-skills",
+      "type": "plugin",
+      "format": "plugin-package",
+      "author": "Microsoft",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "powerbi-plugin",
+      "local": "plugins/powerbi",
+      "repo": "https://github.com/RuiRomano/powerbi-agentic-plugins.git",
+      "branch": "main",
+      "subpath": "plugins/powerbi",
+      "type": "plugin",
+      "format": "plugin-package",
+      "author": "Rui Romano",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "fabric-plugin",
+      "local": "plugins/fabric",
+      "repo": "https://github.com/RuiRomano/powerbi-agentic-plugins.git",
+      "branch": "main",
+      "subpath": "plugins/fabric",
+      "type": "plugin",
+      "format": "plugin-package",
+      "author": "Rui Romano",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "reports-plugin",
+      "local": "plugins/reports",
+      "repo": "https://github.com/data-goblin/power-bi-agentic-development.git",
+      "branch": "main",
+      "subpath": "plugins/reports",
+      "type": "plugin",
+      "format": "plugin-package",
+      "author": "data-goblin",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "microsoft-docs",
+      "local": "skills/microsoft-docs",
+      "repo": "https://github.com/microsoft/skills.git",
+      "branch": "main",
+      "subpath": ".github/skills/microsoft-docs",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Microsoft",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "continual-learning",
+      "local": "skills/continual-learning",
+      "repo": "https://github.com/microsoft/skills.git",
+      "branch": "main",
+      "subpath": ".github/skills/continual-learning",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Microsoft",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "github-issue-creator",
+      "local": "skills/github-issue-creator",
+      "repo": "https://github.com/microsoft/skills.git",
+      "branch": "main",
+      "subpath": ".github/skills/github-issue-creator",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Microsoft",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "azure-skills",
+      "local": "plugins/azure-skills",
+      "repo": "https://github.com/microsoft/skills.git",
+      "branch": "main",
+      "subpath": ".github/plugins/azure-skills",
+      "type": "plugin",
+      "format": "plugin-package",
+      "author": "Microsoft",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "deep-wiki",
+      "local": "plugins/deep-wiki",
+      "repo": "https://github.com/microsoft/skills.git",
+      "branch": "main",
+      "subpath": ".github/plugins/deep-wiki",
+      "type": "plugin",
+      "format": "plugin-package",
+      "author": "Microsoft",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "skill-creator",
+      "local": "skills/skill-creator",
+      "repo": "https://github.com/anthropics/skills.git",
+      "branch": "main",
+      "subpath": "skills/skill-creator",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Anthropic",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "mcp-builder",
+      "local": "skills/mcp-builder",
+      "repo": "https://github.com/anthropics/skills.git",
+      "branch": "main",
+      "subpath": "skills/mcp-builder",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Anthropic",
+      "license": "MIT",
+      "last_synced_sha": null
+    },
+    {
+      "name": "ponytail",
+      "local": "skills/ponytail",
+      "repo": "https://github.com/DietrichGebert/ponytail.git",
+      "branch": "main",
+      "subpath": "skills/ponytail",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Dietrich Gebert",
+      "license": "MIT",
+      "last_synced_sha": null
+    }
+  ],
+  "excluded": [
+    {
+      "name": "caveman",
+      "local": "skills/caveman",
+      "reason": "Locally modified to suit personal use; do not auto-update. (Origin: Matt Pocock, MIT.)"
+    },
+    {
+      "name": "pbi-visual-rendering",
+      "local": "skills/pbi-visual-rendering",
+      "reason": "Own skill (Benjamin Hanna / Houston ISD)."
+    },
+    {
+      "name": "semantic-modeling-prepforai",
+      "local": "skills/semantic-modeling-prepforai",
+      "reason": "Own skill (Benjamin Hanna / Houston ISD)."
+    },
+    {
+      "name": "github-mastery",
+      "local": "skills/github-mastery",
+      "reason": "Own skill (Benjamin Hanna / Houston ISD)."
+    },
+    {
+      "name": "k12-dashboard-mockup",
+      "local": "skills/k12-dashboard-mockup",
+      "reason": "Own skill (Benjamin Hanna / Houston ISD)."
+    },
+    {
+      "name": "rayfin-companion",
+      "local": "skills/rayfin-companion",
+      "reason": "Own skill (Benjamin Hanna / Houston ISD)."
+    },
+    {
+      "name": "activator-authoring-cli",
+      "local": "skills/activator-authoring-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "activator-consumption-cli",
+      "local": "skills/activator-consumption-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "check-updates",
+      "local": "skills/check-updates",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "databricks-migration",
+      "local": "skills/databricks-migration",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "dataflows-authoring-cli",
+      "local": "skills/dataflows-authoring-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "dataflows-consumption-cli",
+      "local": "skills/dataflows-consumption-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "dataflows-save-as-authoring-cli",
+      "local": "skills/dataflows-save-as-authoring-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "e2e-medallion-architecture",
+      "local": "skills/e2e-medallion-architecture",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "eventhouse-authoring-cli",
+      "local": "skills/eventhouse-authoring-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "eventhouse-consumption-cli",
+      "local": "skills/eventhouse-consumption-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "eventstream-authoring-cli",
+      "local": "skills/eventstream-authoring-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "eventstream-consumption-cli",
+      "local": "skills/eventstream-consumption-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "fabriciq",
+      "local": "skills/fabriciq",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "hdinsight-migration",
+      "local": "skills/hdinsight-migration",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "search-consumption-cli",
+      "local": "skills/search-consumption-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "semantic-model-authoring",
+      "local": "skills/semantic-model-authoring",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "semantic-model-consumption",
+      "local": "skills/semantic-model-consumption",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "spark-authoring-cli",
+      "local": "skills/spark-authoring-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "spark-consumption-cli",
+      "local": "skills/spark-consumption-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "spark-operations-cli",
+      "local": "skills/spark-operations-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "sqldw-authoring-cli",
+      "local": "skills/sqldw-authoring-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "sqldw-consumption-cli",
+      "local": "skills/sqldw-consumption-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "sqldw-operations-cli",
+      "local": "skills/sqldw-operations-cli",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "synapse-migration",
+      "local": "skills/synapse-migration",
+      "reason": "Extracted from fabric-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "powerbi-report-authoring",
+      "local": "skills/powerbi-report-authoring",
+      "reason": "Extracted from powerbi plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "powerbi-semantic-model-authoring",
+      "local": "skills/powerbi-semantic-model-authoring",
+      "reason": "Extracted from powerbi plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "fabric-cli",
+      "local": "skills/fabric-cli",
+      "reason": "Extracted from fabric plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "create-pbi-report",
+      "local": "skills/create-pbi-report",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "deneb-visuals",
+      "local": "skills/deneb-visuals",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "modifying-theme-json",
+      "local": "skills/modifying-theme-json",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "pbi-report-design",
+      "local": "skills/pbi-report-design",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "pbir-cli",
+      "local": "skills/pbir-cli",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "python-visuals",
+      "local": "skills/python-visuals",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "r-visuals",
+      "local": "skills/r-visuals",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "review-report",
+      "local": "skills/review-report",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "svg-visuals",
+      "local": "skills/svg-visuals",
+      "reason": "Extracted from reports plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "airunway-aks-setup",
+      "local": "skills/airunway-aks-setup",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "appinsights-instrumentation",
+      "local": "skills/appinsights-instrumentation",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-ai",
+      "local": "skills/azure-ai",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-aigateway",
+      "local": "skills/azure-aigateway",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-cloud-migrate",
+      "local": "skills/azure-cloud-migrate",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-compliance",
+      "local": "skills/azure-compliance",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-compute",
+      "local": "skills/azure-compute",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-cost",
+      "local": "skills/azure-cost",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-deploy",
+      "local": "skills/azure-deploy",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-diagnostics",
+      "local": "skills/azure-diagnostics",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-enterprise-infra-planner",
+      "local": "skills/azure-enterprise-infra-planner",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-hosted-copilot-sdk",
+      "local": "skills/azure-hosted-copilot-sdk",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-kubernetes",
+      "local": "skills/azure-kubernetes",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-kusto",
+      "local": "skills/azure-kusto",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-messaging",
+      "local": "skills/azure-messaging",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-prepare",
+      "local": "skills/azure-prepare",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-quotas",
+      "local": "skills/azure-quotas",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-rbac",
+      "local": "skills/azure-rbac",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-reliability",
+      "local": "skills/azure-reliability",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-resource-lookup",
+      "local": "skills/azure-resource-lookup",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-resource-visualizer",
+      "local": "skills/azure-resource-visualizer",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-storage",
+      "local": "skills/azure-storage",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-upgrade",
+      "local": "skills/azure-upgrade",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "azure-validate",
+      "local": "skills/azure-validate",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "entra-agent-id",
+      "local": "skills/entra-agent-id",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "entra-app-registration",
+      "local": "skills/entra-app-registration",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "microsoft-foundry",
+      "local": "skills/microsoft-foundry",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "python-appservice-deploy",
+      "local": "skills/python-appservice-deploy",
+      "reason": "Extracted from azure-skills plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-ado-convert",
+      "local": "skills/wiki-ado-convert",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-agents-md",
+      "local": "skills/wiki-agents-md",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-architect",
+      "local": "skills/wiki-architect",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-changelog",
+      "local": "skills/wiki-changelog",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-llms-txt",
+      "local": "skills/wiki-llms-txt",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-onboarding",
+      "local": "skills/wiki-onboarding",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-page-writer",
+      "local": "skills/wiki-page-writer",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-qa",
+      "local": "skills/wiki-qa",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-researcher",
+      "local": "skills/wiki-researcher",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "wiki-vitepress",
+      "local": "skills/wiki-vitepress",
+      "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    }
+  ]
+}

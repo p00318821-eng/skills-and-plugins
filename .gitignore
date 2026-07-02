@@ -1,2 +1,15 @@
 # Editor / IDE
 .vscode/
+
+# Sync engine cache
+.cache/
+
+# Environment secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Destination matrix working file (user-edited locally)
+destinations-matrix.csv

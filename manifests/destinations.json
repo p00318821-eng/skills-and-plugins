@@ -1,0 +1,74 @@
+{
+  "format_version": 1,
+  "_comment": "Where skills get distributed. Paths use {HOME} and {REPO_ROOT} for portability.",
+  "destinations": [
+    {
+      "id": "claude-code-user",
+      "environment": "claude-code",
+      "type": "skill-folder",
+      "method": "skill-folder-copy",
+      "target_dir": "{HOME}/.claude/skills",
+      "skills_assigned": [
+        "grill-me",
+        "grill-with-docs",
+        "microsoft-docs",
+        "ponytail",
+        "github-mastery",
+        "k12-dashboard-mockup",
+        "pbi-visual-rendering",
+        "rayfin-companion",
+        "semantic-modeling-prepforai",
+        "caveman",
+        "deneb-visuals",
+        "svg-visuals"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "cloud-agents",
+      "environment": "cloud-agents",
+      "type": "skill-folder",
+      "method": "skill-folder-copy",
+      "target_dir": "{HOME}/.agents/skills",
+      "skills_assigned": [
+        "grill-me",
+        "grill-with-docs",
+        "microsoft-docs",
+        "ponytail",
+        "github-mastery",
+        "k12-dashboard-mockup",
+        "pbi-visual-rendering",
+        "rayfin-companion",
+        "semantic-modeling-prepforai",
+        "caveman",
+        "deneb-visuals",
+        "microsoft-foundry",
+        "svg-visuals"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "copilot-skills",
+      "environment": "copilot",
+      "type": "skill-folder",
+      "method": "skill-folder-copy",
+      "target_dir": "{HOME}/.copilot/skills",
+      "skills_assigned": [
+        "grill-me",
+        "ponytail",
+        "rayfin-companion",
+        "caveman"
+      ],
+      "enabled": true
+    },
+    {
+      "id": "copilot-user-instructions",
+      "environment": "copilot",
+      "type": "skill-injection",
+      "method": "markdown-boundary",
+      "target_file": "{HOME}/.github/copilot-instructions.md",
+      "skills_assigned": [],
+      "enabled": false
+    }
+  ]
+}
