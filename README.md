@@ -22,6 +22,10 @@ for each are listed below.
 | [.claude/CLAUDE.md](.claude/CLAUDE.md) | AI-agent operating instructions + navigation map |
 | [CHANGELOG.md](CHANGELOG.md) | What changed, by release |
 
+This table mirrors `.claude/CLAUDE.md`'s Navigation Map (kept separately since agents
+auto-load `.claude/CLAUDE.md` at session start, while humans land here via GitHub first)
+— update both if the doc set changes.
+
 ## Skills
 
 | Skill | Folder | Purpose |
@@ -135,12 +139,12 @@ py -m pip install -r requirements.txt
 specifies a `target_file` (with `{HOME}` expansion), `skills_assigned`, and an
 `enabled` toggle.
 
-**Run** [`sync_orchestrator.ipynb`](sync_orchestrator.ipynb) in VS Code:
-1. **Init** — loads environment and manifests.
-2. **Build Cache** — copies SKILL.md files to `.cache/prompts/`.
-3. **Distribute** — injects cached prompts into target files using idempotent
+**Run** [`skills-workflow.ipynb`](skills-workflow.ipynb) in VS Code — Phase 4
+(Distribute):
+1. **Build Cache** — copies SKILL.md files to `.cache/prompts/`.
+2. **Distribute** — injects cached prompts into target files using idempotent
    HTML-comment boundary markers (`<!-- MANAGED-SKILLS:START/END -->`).
-4. **Report** — prints a summary of what changed.
+3. **Report** — prints a summary of what changed.
 
 Manual content outside the boundary markers is always preserved.
 
@@ -148,11 +152,11 @@ Manual content outside the boundary markers is always preserved.
 
 The externally-sourced skills are tracked in
 [`manifests/origins.json`](manifests/origins.json) and refreshed with
-[`update-sourced-skills.ipynb`](update-sourced-skills.ipynb). The notebook
-shallow-clones each upstream repo, shows a per-skill change-list (with diffs)
-when an update exists, and lets you apply or disregard each one. Applying
-preserves local-only files (e.g. the vendored `LICENSE` copies) and never
-deletes anything.
+[`skills-workflow.ipynb`](skills-workflow.ipynb)'s Phase 2 (Update from
+source). It shallow-clones each upstream repo, shows a per-skill change-list
+(with diffs) when an update exists, and lets you apply or disregard each one.
+Applying preserves local-only files (e.g. the vendored `LICENSE` copies) and
+never deletes anything.
 
 Skills under `excluded` in the manifest are never auto-updated — this includes
 locally-modified skills, my own skills, and skills extracted from a plugin
@@ -184,14 +188,14 @@ is included in each folder below)
 ### ChangyuanYU — MBTI Persona Skill
 
 Source: <https://github.com/ChangyuanYU/mbti-persona-skill> · License: MIT
-(see [`mbti-persona/LICENSE`](mbti-persona/LICENSE))
+(see [`skills/mbti-persona/LICENSE`](skills/mbti-persona/LICENSE))
 
 - **mbti-persona**
 
 ### Eoghan Henn / rebelytics.com — One Skill to Rule Them All
 
 Source: <https://github.com/rebelytics/one-skill-to-rule-them-all> ·
-License: CC BY 4.0 (see [`one-skill-to-rule-them-all/LICENSE.txt`](one-skill-to-rule-them-all/LICENSE.txt))
+License: CC BY 4.0 (see [`skills/one-skill-to-rule-them-all/LICENSE.txt`](skills/one-skill-to-rule-them-all/LICENSE.txt))
 
 - **task-observer**
 

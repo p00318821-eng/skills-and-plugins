@@ -1,6 +1,6 @@
 {
   "format_version": 2,
-  "_comment": "Source-of-truth manifest for externally-sourced skills. Drives update-sourced-skills.ipynb and sync_orchestrator.ipynb. 'last_synced_sha' is informational and is stamped by the notebook when an update is applied.",
+  "_comment": "Source-of-truth manifest for externally-sourced skills. Drives skills-workflow.ipynb's Phase 2 (update) and Phase 4 (distribute). 'last_synced_sha' is informational and is stamped by the notebook when an update is applied.",
   "ignore": [".git", ".github", ".gitignore", ".DS_Store", "node_modules", ".vscode", ".idea"],
   "skills": [
     {

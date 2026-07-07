@@ -22,12 +22,34 @@ Kept here so they survive beyond any single working session.
   human-readable credit is consolidated in the README's Attribution section —
   not restated here or in `plugins/README.md`.
 
+## Constraints
+
+Facts about this repo's license/update obligations — centralized here since they were
+previously only inferable from scattered README prose.
+
+- **License compliance is per-skill, not per-repo.** Each externally-sourced skill folder
+  retains its own upstream license file (MIT/CC-BY) alongside its `SKILL.md`; the
+  human-readable credit is consolidated in README's Attribution section. Deleting a
+  vendored skill's license file is a compliance regression, not just a tidy-up.
+- **`manifests/origins.json`'s `excluded` list is the authoritative source for which
+  skills never auto-update, and why** — three categories:
+  - **Locally modified** (e.g. `caveman`): diverged from upstream on purpose; an
+    auto-update would silently overwrite intentional local changes.
+  - **Own skills** (no upstream source): nothing to sync against.
+  - **Plugin-extracted** (e.g. every `azure-skills`/`deep-wiki`/`fabric-skills`/`powerbi`/
+    `reports` skill copied into `skills/`): these update via their parent plugin package's
+    entry in `origins.json`, not individually — don't add them to Phase 2's per-skill
+    update flow separately, that would be redundant with the plugin-level sync.
+- **Tracked skills carry an upstream repo + subpath** and are the only ones Phase 2
+  (`skills-workflow.ipynb`) offers to diff/update — everything in `excluded` is
+  intentionally invisible to that flow.
+
 ## Skill Update Mechanism
 
-`manifests/origins.json` is the source-of-truth manifest; `update-sourced-skills.ipynb`
-is the tool. The notebook shallow-clones each upstream repo, diffs its `subpath`
-against the local folder, prints a per-skill change-list (with diffs), and lets
-you apply or disregard each update.
+`manifests/origins.json` is the source-of-truth manifest; `skills-workflow.ipynb`'s
+Phase 2 (backed by `scripts/update_engine.py`) is the tool. It shallow-clones each
+upstream repo, diffs its `subpath` against the local folder, prints a per-skill
+change-list (with diffs), and lets you apply or disregard each update.
 
 Design rules baked into the tool:
 
@@ -47,9 +69,10 @@ Design rules baked into the tool:
    *deletion* leaves the old file in place. These show up in the change-list as
    "local-only (kept)", so they're user-recoverable — review that list and
    remove stale files by hand when needed.
-2. **Temp clones aren't cleaned up.** `clone_upstream` creates one shallow clone
-   per upstream repo in the OS temp dir per session and does not remove it. The
-   OS eventually clears temp; delete manually if disk pressure matters.
+2. **Temp clones aren't cleaned up.** `update_engine.clone_upstream` creates one
+   shallow clone per upstream repo in the OS temp dir per session and does not
+   remove it. The OS eventually clears temp; delete manually if disk pressure
+   matters.
 
 Both are intentional trade-offs (never-delete protects local additions), not
 bugs — recorded here so they're not rediscovered later.
@@ -64,22 +87,27 @@ copilot-instructions.md) for multiple AI tool environments. (`.claude/CLAUDE.md`
 ### How it works
 
 1. `manifests/destinations.json` defines where skills go — each entry has a
-   `target_file` (with `{HOME}` expansion), a list of `skills_assigned`, and an
-   `enabled` toggle.
+   `target_file` or `target_dir` (with `{HOME}`/`{REPO_ROOT}` expansion), a list
+   of `skills_assigned`, and an `enabled` toggle. Assignments are edited via a
+   `destinations-matrix.csv` spreadsheet round-trip (`scripts/generate_destinations_csv.py`
+   / `scripts/update_destinations_from_csv.py`), wired into `skills-workflow.ipynb`'s
+   Phase 3.
 2. `scripts/sync_engine.py` is the shared Python library. Its `inject_markdown()`
    function uses HTML-comment boundary markers (`<!-- MANAGED-SKILLS:START -->` /
    `<!-- MANAGED-SKILLS:END -->`) to idempotently replace only the managed
    section, preserving any manual content outside the markers.
-3. `sync_orchestrator.ipynb` is the interactive tool: Init → Build Cache →
-   Distribute → Report.
+3. `skills-workflow.ipynb`'s Phase 4 is the interactive distribute step: Build
+   Cache → Distribute → Report.
 
 ### Cache directory
 
 Skill prompts are cached in `.cache/prompts/` (gitignored) as flat `.md` files.
 This avoids mixing build artifacts with the vendored `skills/` folders.
 
-### Relationship to the update notebook
+### Relationship to the other phases
 
-`update-sourced-skills.ipynb` handles _pulling_ from upstream repos.
-`sync_orchestrator.ipynb` handles _distributing_ to local AI tool configs.
-They share `manifests/origins.json` but do different jobs.
+`skills-workflow.ipynb`'s Phase 2 (`scripts/update_engine.py`) handles _pulling_
+from upstream repos. Phase 4 (`scripts/sync_engine.py`) handles _distributing_ to
+local AI tool configs. They share `manifests/origins.json` but do different jobs —
+kept as separate modules rather than folded into one, since "upstream → local"
+and "origins/destinations → targets" are genuinely distinct data-flow directions.

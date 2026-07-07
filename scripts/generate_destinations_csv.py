@@ -3,7 +3,7 @@
 Generate a spreadsheet (CSV) showing all skills/plugins and their destination assignments.
 
 Usage:
-  py scripts/generate-destinations-csv.py
+  py scripts/generate_destinations_csv.py
 
 Output:
   destinations-matrix.csv — edit this file in Excel/Sheets to assign items to destinations
@@ -39,8 +39,9 @@ def categorize_source(skill_name: str, skill_entry: dict, is_tracked: bool) -> s
         return "skill-excluded-own"
 
 
-def main():
-    repo_root = find_repo_root()
+def generate_csv(repo_root: Path) -> Path:
+    """Reads origins.json + destinations.json, writes destinations-matrix.csv.
+    Returns the output path. Callable from the consolidated notebook's Phase 3."""
     origins_path = repo_root / "manifests" / "origins.json"
     destinations_path = repo_root / "manifests" / "destinations.json"
     output_path = repo_root / "destinations-matrix.csv"
@@ -122,7 +123,13 @@ def main():
     print(f"  - Add 'x' in a cell to assign that item to that destination")
     print(f"  - Add new columns for new destinations")
     print(f"  - Remove rows for items you don't want to distribute")
-    print(f"\nThen run: py scripts/update-destinations-from-csv.py")
+    print(f"\nThen run: py scripts/update_destinations_from_csv.py")
+
+    return output_path
+
+
+def main():
+    generate_csv(find_repo_root())
 
 
 if __name__ == "__main__":

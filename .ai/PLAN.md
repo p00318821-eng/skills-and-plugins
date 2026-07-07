@@ -4,16 +4,24 @@
 
 ## Active Goals
 
-- **Round 1 — Hub-and-Spoke adoption (Compiled-only rung), 2026-07-02 — IN PROGRESS.**
-  Migrated `.ai/` structure onto this repo (previously zero `.ai/` presence): moved
-  `CLAUDE.md` → `.claude/CLAUDE.md` (now a compiled pointer file), renamed
-  `docs/PROJECT-NOTES.md` → `ARCHITECTURE.md` (root, deduplicated), consolidated
-  attribution onto `README.md` (regenerated the 93-row skill table), added
-  `.ai/rules/000-agent-operating-mandates.md`, deleted the orphaned
-  `skill-plugin-sources.json` stub. Also absorbed a large pending expansion
-  (~1,645 untracked files: Azure/Foundry skills, azure-skills/deep-wiki plugins, the
-  distribution-tooling subsystem) into clean, reviewable commits as part of the same
-  pass. See `.ai/archive/2026-07-shipped.md` once this round closes.
+- **Round 2 — Notebook consolidation + memory-architecture tooling, 2026-07-07 —
+  SHIPPED.** Merged three notebooks (`ingest-project.ipynb`, `update-sourced-skills.ipynb`,
+  `sync_orchestrator.ipynb`) into a single `skills-workflow.ipynb` with a phase-selector
+  widget over four independent phases; extracted `scripts/ingest_engine.py` and
+  `scripts/update_engine.py` to de-duplicate logic that previously existed in two parallel
+  implementations each; renamed the CSV scripts to importable underscore modules; retired
+  `scripts/ingest-destination.py` (confirmed no external callers). Built
+  `scripts/compile_claude_md.py` and `scripts/check_doc_links.py` (Python ports of the
+  Standard's compile step + sync-check, since this repo has no Node toolchain) — closes
+  the gap where `.claude/CLAUDE.md` claimed to be a "GENERATED FILE" with no script that
+  generated it. Ran a `memory-architect` AUDIT that caught and fixed: a stray empty
+  `docs/` directory, two stale README license links pre-dating the `skills/` flattening,
+  a duplicated nav table between README and `.claude/CLAUDE.md` (now cross-referenced
+  instead of silently duplicated), and centralized the Constraints section (license +
+  update-exclusion rules) into `ARCHITECTURE.md`. Also generalized the `memory-architect`
+  skill itself (SCAFFOLD step 10 made language-agnostic; new AUDIT dimension 15 for
+  migration cleanliness) since both gaps are reusable lessons, not one-off fixes. Round 1
+  (Hub-and-Spoke adoption) shipped 2026-07-02 — see `.ai/archive/2026-07-shipped.md`.
 
 ## Open Blockers / Decisions
 
@@ -28,9 +36,6 @@
 
 ## Resume Pointer
 
-If interrupted mid-migration: check whether `.claude/CLAUDE.md` exists and is compiled
-(not the old root `CLAUDE.md`), whether `ARCHITECTURE.md` exists at root (not
-`docs/PROJECT-NOTES.md`), and whether `README.md`'s skill table has 93 rows — those are
-the three largest, most interruptible steps. `.ai/LINEAGE.md` should name the
-**Compiled-only** rung explicitly once present; if it's missing, the migration hasn't
-reached that step yet.
+Round 2 is shipped and this repo is current as of 2026-07-07. Nothing mid-flight — next
+session should either resolve the plugin/skills byte-duplication decision above, or start
+a fresh round when new work comes up.

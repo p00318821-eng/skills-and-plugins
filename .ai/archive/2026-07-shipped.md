@@ -1,5 +1,32 @@
 # Shipped — 2026-07
 
+## Hub-and-Spoke adoption (Compiled-only rung)
+
+**Decision:** Adopted the Hub-and-Spoke Compiled-only rung from
+`project-memory-template@3af6758`. Moved `CLAUDE.md` → `.claude/CLAUDE.md` (now a
+compiled pointer file), renamed `docs/PROJECT-NOTES.md` → root `ARCHITECTURE.md`
+(deduplicated), consolidated attribution onto `README.md` (regenerated the 93-row skill
+table), added `.ai/rules/000-agent-operating-mandates.md`, deleted the orphaned
+`skill-plugin-sources.json` stub. Absorbed a large pending expansion (~1,645 untracked
+files: Azure/Foundry skills, azure-skills/deep-wiki plugins, the distribution-tooling
+subsystem) into clean, reviewable commits as part of the same pass.
+
+**Why:** The repo's doc/skill surface had grown well past what a single flat `CLAUDE.md`
+could hold coherently, and there was no way for an agent or human to tell "this repo
+follows a deliberate memory pattern" from "this `.ai/` folder happened by accident" —
+adopting a published Standard (rather than inventing an ad hoc scheme) gave the repo a
+name for its own structure and a way to self-identify via `.ai/LINEAGE.md`.
+
+**Alternatives rejected:** Staying with a flat `CLAUDE.md` + `docs/PROJECT-NOTES.md`
+(rejected — already past the Granularity Floor given the skill/plugin expansion
+happening in the same round).
+
+**Reversal cost:** Moderate — would require re-flattening `.ai/rules/` back into a single
+hand-maintained `CLAUDE.md` and losing the `.ai/LINEAGE.md` self-identification; git
+history preserves the prior flat `CLAUDE.md` content if ever needed.
+
+**Date:** 2026-07-02
+
 ## Submodule-to-flat-folders migration
 
 **Decision:** Replaced Git submodules (`mattpocock/skills` at `6da833d`,
