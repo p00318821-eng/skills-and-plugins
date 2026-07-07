@@ -13,7 +13,6 @@ from __future__ import annotations
 import json
 import os
 import shutil
-import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -71,81 +70,6 @@ def load_origins(repo_root: Path) -> dict:
 def load_destinations(repo_root: Path) -> dict:
     path = repo_root / "manifests" / "destinations.json"
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-# ---------------------------------------------------------------------------
-# Fetch (reuses existing notebook pattern)
-# ---------------------------------------------------------------------------
-
-def _run_git(args: list[str], cwd: Path | None = None) -> str:
-    result = subprocess.run(
-        args, cwd=cwd, capture_output=True, text=True
-    )
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"git command failed: {' '.join(args)}\n{result.stderr.strip()}"
-        )
-    return result.stdout.strip()
-
-
-_clone_cache: dict[tuple[str, str], tuple[Path, str]] = {}
-
-
-def clone_upstream(
-    repo: str, branch: str, cache_dir: Path
-) -> tuple[Path, str]:
-    key = (repo, branch)
-    if key not in _clone_cache:
-        import tempfile
-        dest = Path(tempfile.mkdtemp(prefix="skillsrc_"))
-        _run_git([
-            "git", "clone", "--depth", "1", "--branch", branch,
-            repo, str(dest)
-        ])
-        sha = _run_git(["git", "rev-parse", "HEAD"], cwd=dest)
-        _clone_cache[key] = (dest, sha)
-    return _clone_cache[key]
-
-
-def extract_skill_content(
-    clone_path: Path, subpath: str, ignore: set[str]
-) -> dict[str, Path]:
-    root = (clone_path / subpath) if subpath else clone_path
-    out: dict[str, Path] = {}
-    if root.is_dir():
-        for p in root.rglob("*"):
-            if p.is_file():
-                rel = p.relative_to(root)
-                if not any(part in ignore for part in rel.parts):
-                    out[rel.as_posix()] = p
-    return out
-
-
-def fetch_skill(
-    skill: dict, cache_dir: Path, ignore: set[str]
-) -> dict[str, Any]:
-    try:
-        clone_path, head_sha = clone_upstream(
-            skill["repo"], skill["branch"], cache_dir
-        )
-        up_files = extract_skill_content(
-            clone_path, skill.get("subpath", ""), ignore
-        )
-        return {
-            "skill": skill,
-            "head_sha": head_sha,
-            "up_files": up_files,
-            "status": "fetched",
-        }
-    except Exception as e:
-        cached = cache_dir / "prompts" / f"{skill['name']}.md"
-        return {
-            "skill": skill,
-            "head_sha": None,
-            "up_files": {},
-            "status": "offline-fallback" if cached.is_file() else "failed",
-            "error": str(e),
-        }
 
 
 # ---------------------------------------------------------------------------

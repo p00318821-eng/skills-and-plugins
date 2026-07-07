@@ -3,7 +3,7 @@
 Convert destinations-matrix.csv back to manifests/destinations.json.
 
 Usage:
-  py scripts/update-destinations-from-csv.py
+  py scripts/update_destinations_from_csv.py
 
 Reads:
   destinations-matrix.csv — edited version with new assignments
@@ -25,14 +25,17 @@ def find_repo_root(start: Path | None = None) -> Path:
     raise FileNotFoundError("manifests/origins.json not found in CWD or any parent.")
 
 
-def main():
-    repo_root = find_repo_root()
+def update_destinations_from_csv(repo_root: Path) -> dict:
+    """Reads destinations-matrix.csv, rewrites manifests/destinations.json.
+    Returns the new destinations manifest dict. Callable from the consolidated
+    notebook's Phase 3 (re-import step)."""
     csv_path = repo_root / "destinations-matrix.csv"
     destinations_path = repo_root / "manifests" / "destinations.json"
 
     if not csv_path.is_file():
-        print(f"Error: {csv_path} not found. Run: py scripts/generate-destinations-csv.py")
-        return
+        raise FileNotFoundError(
+            f"{csv_path} not found. Run: py scripts/generate_destinations_csv.py"
+        )
 
     # Load current destinations for metadata
     current_dests = json.loads(destinations_path.read_text(encoding="utf-8"))
@@ -118,6 +121,12 @@ def main():
         print(f"\n⚠ New destinations added (configure these in destinations.json):")
         for dest_id in sorted(new_dests):
             print(f"    {dest_id} — set target_dir and method")
+
+    return manifest
+
+
+def main():
+    update_destinations_from_csv(find_repo_root())
 
 
 if __name__ == "__main__":

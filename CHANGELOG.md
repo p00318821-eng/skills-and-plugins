@@ -1,6 +1,39 @@
 # Changelog
 
-## Unreleased
+Dated by the day the work actually shipped (per git history), not by release
+tag — this repo doesn't version by release.
+
+## 2026-07-07
+
+### Added
+- `skills-workflow.ipynb`: single consolidated notebook (phase-selector widget
+  over four independent phases — Ingest, Update from source, Assign
+  destinations, Distribute), superseding the three notebooks below.
+- `scripts/ingest_engine.py`, `scripts/update_engine.py`: pure-logic modules
+  extracted from the retired notebooks/scripts, de-duplicating scan/classify/
+  reconcile/apply and upstream-clone/diff/apply logic that previously existed
+  in two parallel implementations each.
+- `scripts/compile_claude_md.py`, `scripts/check_doc_links.py`: Python ports of
+  the `project-memory-template` Hub-and-Spoke compile step and doc-link/sync
+  checker, closing the gap where `.claude/CLAUDE.md` claimed to be a
+  "GENERATED FILE" with no script that actually generated it.
+
+### Changed
+- `scripts/generate-destinations-csv.py` / `scripts/update-destinations-from-csv.py`
+  renamed to underscore filenames and refactored into importable functions
+  (`generate_csv`, `update_destinations_from_csv`), wired into the new
+  notebook's Phase 3 instead of requiring a separate terminal step.
+- `scripts/sync_engine.py`: removed `clone_upstream`/`extract_skill_content`/
+  `fetch_skill` (unused — superseded by `scripts/update_engine.py`, which is
+  now the single implementation of upstream fetch/diff logic).
+
+### Removed
+- `ingest-project.ipynb`, `update-sourced-skills.ipynb`, `sync_orchestrator.ipynb`:
+  superseded by `skills-workflow.ipynb`.
+- `scripts/ingest-destination.py`: retired CLI duplicate of the ingest
+  notebook's logic (confirmed no external callers before removal).
+
+## 2026-07-02
 
 ### Added
 - Distribution system: `scripts/sync_engine.py` engine with idempotent
@@ -42,9 +75,7 @@
 - `skill-plugin-sources.json` orphaned stub — fully superseded by
   `manifests/origins.json`, no remaining references.
 
----
-
-## Previous
+## 2026-06-02
 
 ### Added
 - `skill-plugin-sources.json` manifest and `update-sourced-skills.ipynb` notebook to

@@ -18,6 +18,10 @@
 | Why this repo's memory is structured this way | [.ai/LINEAGE.md](../.ai/LINEAGE.md) |
 | What changed, by release | [CHANGELOG.md](../CHANGELOG.md) |
 
+This table mirrors README.md's "Documentation" table (kept separately since this file is
+auto-loaded by agents at session start, while README.md is the human-facing GitHub entry
+point) — update both if the doc set changes.
+
 ## Agent SOPs
 
 Infrastructure changes to `.ai/rules/` route through the `memory-architect` skill (AUDIT
@@ -25,29 +29,28 @@ before changing anything, SCAFFOLD for new pieces, CONSOLIDATE periodically or a
 hoc request produces new learnings) — not ad hoc edits to this file. See
 [.ai/LINEAGE.md](../.ai/LINEAGE.md).
 
-- **Pull updates:** Run `update-sourced-skills.ipynb` in VS Code. Review diffs, apply/skip per skill.
-- **Distribute skills:** Run `sync_orchestrator.ipynb`. Copies skill folders to discovery directories and injects markdown blocks into target files.
-- **Add a new upstream skill:** Add entry to `manifests/origins.json`, run update notebook.
-- **Manage destinations (recommended):**
-  1. Run `py scripts/generate-destinations-csv.py` → exports `destinations-matrix.csv` with source categories (tracked, own, fork, plugin-extracted)
-  2. Edit the CSV: add `x` to assign skills, add columns for new destinations, remove rows for unneeded skills
-  3. Run `py scripts/update-destinations-from-csv.py` → updates `manifests/destinations.json`
-  4. Run `sync_orchestrator.ipynb` to apply changes
-- **Ingest a new project (two-phase workflow):**
-  - **Phase 1 (one-time initial intake):**
-    1. Dry-run: `py scripts/ingest-destination.py --source {project-path} --destination-id {id}`
-    2. Review reconciliation report: new skills, changed skills (with diffs), skills not in project
-    3. Apply: `py scripts/ingest-destination.py --source {project-path} --destination-id {id} --apply --target-dir {target}`
-    4. Classify each new skill interactively: **[T]racked** (provide upstream repo), **[F]ork** (modified from upstream), **[O]wn** (no upstream), **[S]kip**
-    5. Reconcile each changed skill: **[C]entral** (keep central version), **[P]roject** (take project edits), **[S]kip**
-    6. Central imports skills, project becomes a destination (starts disabled)
-  - **Phase 2 (ongoing distribution):**
-    1. Central is now source of truth
-    2. Generate CSV: `py scripts/generate-destinations-csv.py` (reflects newly imported skills)
-    3. Edit CSV: assign skills to destinations, enable the new project destination
-    4. Convert: `py scripts/update-destinations-from-csv.py`
-    5. Distribute: run `sync_orchestrator.ipynb`
-    6. No more scanning/importing; central controls what goes to project
+All four lifecycle steps below live in one notebook, **`skills-workflow.ipynb`** —
+a phase-selector widget at the top lets you run just the phase(s) you need this
+session; each phase reads its own state fresh from disk, so they don't have to
+run in order. Phase logic lives in `scripts/`, the notebook is a thin UI shell.
+
+- **Phase 1 — Ingest a new project's skills:** scan a project's skill directory
+  vs. central, classify each new skill (**[T]racked**/**[F]ork**/**[O]wn**/**[S]kip**),
+  reconcile each changed one (**[C]entral**/**[P]roject**/**[S]kip**), apply, then
+  verify the manifest ledger. Backed by `scripts/ingest_engine.py`. Central
+  becomes source of truth; the project becomes a destination (starts disabled).
+- **Phase 2 — Pull updates from upstream:** shallow-clones each tracked skill's
+  upstream repo, diffs vs. local, shows added/modified files (with diffs), lets
+  you apply or skip per skill. Backed by `scripts/update_engine.py`.
+- **Phase 3 — Assign destinations:** a deliberate spreadsheet handoff, not an
+  in-notebook grid editor. Export `destinations-matrix.csv`
+  (`scripts/generate_destinations_csv.py`), edit it in Excel (add `x` to assign
+  a skill to a destination, add columns for new destinations), then re-import
+  (`scripts/update_destinations_from_csv.py`) to rewrite `manifests/destinations.json`.
+- **Phase 4 — Distribute:** fully automatable, no human decision points. Builds
+  the prompt cache and pushes to every enabled destination via
+  `scripts/sync_engine.py` (folder-copy or markdown-boundary injection).
+- **Add a new upstream skill:** add entry to `manifests/origins.json`, run Phase 2.
 - **Add your own skill:** Create `skills/{name}/SKILL.md`, add to `excluded` in origins.json.
 - **Add a destination manually:** Edit `manifests/destinations.json` directly, add entry with `enabled: true`, `method` (skill-folder-copy or markdown-boundary), and `target_dir`/`target_file`.
 
@@ -59,12 +62,14 @@ hoc request produces new learnings) — not ad hoc edits to this file. See
 | `plugins/` | Plugin packages (azure-skills, deep-wiki, fabric, fabric-skills, powerbi, reports) |
 | `manifests/origins.json` | Tracks where each skill is sourced from (v2 format) |
 | `manifests/destinations.json` | Tracks where skills get distributed to |
-| `scripts/sync_engine.py` | Distribution engine: folder-copy + markdown-boundary methods |
-| `scripts/generate-destinations-csv.py` | Export destinations as editable spreadsheet |
-| `scripts/update-destinations-from-csv.py` | Convert spreadsheet back to destinations.json |
-| `update-sourced-skills.ipynb` | Fetch upstream skill updates (interactive) |
-| `sync_orchestrator.ipynb` | Distribute skills to configured destinations |
-| `ingest-project.ipynb` | Two-phase workflow to ingest an external project's skills |
+| `skills-workflow.ipynb` | Single interactive notebook: Ingest → Update from source → Assign destinations → Distribute |
+| `scripts/ingest_engine.py` | Ingest/classify/reconcile/apply logic (Phase 1) |
+| `scripts/update_engine.py` | Upstream clone/diff/apply logic (Phase 2) |
+| `scripts/sync_engine.py` | Distribution engine: folder-copy + markdown-boundary methods (Phase 4) |
+| `scripts/generate_destinations_csv.py` | Export destinations as editable spreadsheet (Phase 3) |
+| `scripts/update_destinations_from_csv.py` | Convert spreadsheet back to destinations.json (Phase 3) |
+| `scripts/compile_claude_md.py` | Regenerates this file's compiled section from `.ai/rules/*.md` |
+| `scripts/check_doc_links.py` | Validates doc links + Hub-and-Spoke sync (manual gate — no CI in this repo) |
 | `ARCHITECTURE.md` | Conventions, decisions, skill-update/distribution mechanics |
 | `.ai/rules/` | Agent gotcha/convention source of truth, compiled into this file |
 
