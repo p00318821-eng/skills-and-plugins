@@ -114,11 +114,13 @@ it produces confusing "app not found" or no-op behavior instead of a clear error
 `py` launcher (Python 3.12.x) to run notebooks and scripts (`py scripts/sync_engine.py`,
 etc.).
 
-### `curl` is blocked; use `git` for network operations
+### `curl` is blocked; use `git`/`gh` for network operations
 
 Corporate Schannel policy blocks `curl`/HTTPS API calls with
 `CRYPT_E_NO_REVOCATION_CHECK`. Anything that needs network access uses `git`
-(clone / ls-remote) instead. The `gh` CLI is not installed — don't assume it's available.
+(clone / ls-remote) or the `gh` CLI (PRs, issues, repo API calls) instead — both are
+installed and authenticated (verify with `gh auth status` if unsure). Don't assume `curl`
+works even for something trivial; it doesn't.
 
 ### VS Code / Synapse Git integration auto-pushes to `origin/main`
 
