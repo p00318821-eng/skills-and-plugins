@@ -4,6 +4,40 @@
 
 ## Active Goals
 
+- **Round 3 — Deprecate `semantic-modeling-prepforai` + global HISD hooks +
+  memory-architect defect fix, 2026-07-10 — SHIPPED, live-session hook
+  verification CONFIRMED (2026-07-10).** A skill comparison exercise found 3 of 6 comparable
+  Power BI/Fabric skills already had AI-readiness content, most notably
+  `fabric-skills:semantic-model-authoring`'s own dedicated workflow — more
+  rigorously engineered but missing HISD-specific content entirely. Rather
+  than fork or maintain a parallel skill (fragile: relies on two skills'
+  descriptions co-triggering), HISD context is now delivered via two global
+  Claude Code hooks (`SessionStart` + `PostToolUse` on `.tmdl`, registered in
+  `~/.claude/settings.json`, outside this repo) that fire regardless of which
+  skill drives an edit. Verifying the hooks mechanism against official docs +
+  GitHub issues surfaced two real corrections along the way: (1) a
+  pre-existing defect in the global `memory-architect` skill claiming
+  `PreToolUse` can inject `additionalContext` (it can't — fixed to
+  `PostToolUse`); (2) `updatedToolOutput` *replaces* the tool result rather
+  than appending to it, so the corrected hook design uses
+  `hookSpecificOutput.additionalContext` instead, in both `memory-architect`
+  and the new HISD hooks. `skills/semantic-modeling-prepforai/SKILL.md` is now
+  a ~40-line deprecation notice; its manual copy/paste TMDL workflow and
+  Truncation Prevention protocol were dropped as obsolete (MCP-first editing
+  supersedes them); HISD-specific content (synonym glossary, AI Instructions
+  template, relationship naming pattern, AI-consumer compatibility matrix)
+  consolidated into `references/hisd-power-bi-context.md`. Folder retained —
+  still `sync_engine.py`'s distribution vehicle to `~/.claude/skills/` and
+  `~/.agents/skills/`, which the hooks read from. **Live-session verification
+  (2026-07-10, confirmed in a fresh session):** `SessionStart`'s
+  `additionalContext` pointer fired; `PostToolUse` fired correctly on both
+  `Write` and `Edit` to a scratch `.tmdl` file (reminder appeared only in the
+  tool-result system reminder, never written into the file); a `.txt` write
+  in the same session produced no reminder (negative case holds); temporarily
+  renaming `hisd-tmdl-reminder.js` and editing a `.tmdl` file still succeeded
+  normally with no error surfaced (fail-open holds) — hook restored after.
+  Distribution regression check (Phase 4 dry-run for this skill + one
+  sibling) is still open — see plan file items 9-11.
 - **Round 2 — Notebook consolidation + memory-architecture tooling, 2026-07-07 —
   SHIPPED.** Merged three notebooks (`ingest-project.ipynb`, `update-sourced-skills.ipynb`,
   `sync_orchestrator.ipynb`) into a single `skills-workflow.ipynb` with a phase-selector
@@ -36,6 +70,10 @@
 
 ## Resume Pointer
 
-Round 2 is shipped and this repo is current as of 2026-07-07. Nothing mid-flight — next
-session should either resolve the plugin/skills byte-duplication decision above, or start
-a fresh round when new work comes up.
+Round 3's file changes are shipped as of 2026-07-10, and the live-session hook
+verification (SessionStart, PostToolUse positive/negative, fail-open) is now confirmed —
+see Active Goals above. Remaining open items from the Part 5 checklist: re-run Phase 4
+distribution for `semantic-modeling-prepforai` and one sibling skill to confirm no
+regressions (plan items 9-11), and the trigger-avoidance smoke test (plan item 11). The
+plugin/skills byte-duplication decision from Round 2 is still open and unrelated to this
+round.

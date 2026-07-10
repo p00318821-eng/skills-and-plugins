@@ -234,7 +234,7 @@
     {
       "name": "semantic-modeling-prepforai",
       "local": "skills/semantic-modeling-prepforai",
-      "reason": "Own skill (Benjamin Hanna / Houston ISD)."
+      "reason": "Own skill (Benjamin Hanna / Houston ISD). Deprecated as an actively-invoked skill 2026-07-10 in favor of global SessionStart/PostToolUse hooks (see references/global-hooks.md) — its HISD-specific content is consolidated in references/hisd-power-bi-context.md. Folder retained (not deleted) because it's still the distribution vehicle to ~/.claude/skills/ and ~/.agents/skills/, which the hooks read from."
     },
     {
       "name": "github-mastery",

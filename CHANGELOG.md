@@ -23,6 +23,27 @@ tag — this repo doesn't version by release.
 - `.ai/rules/200-hook-authoring-conventions.md` equivalent promoted upstream to
   `project-memory-template` (this repo's canonical reference) — see that repo's
   changelog/PLAN for the consolidation pass.
+- Two global Claude Code hooks (`~/.claude/settings.json` + `~/.claude/hooks/`,
+  outside this repo): `SessionStart` points Claude at HISD Power BI/Fabric
+  context once per session; `PostToolUse` (scoped to `.tmdl` edits/writes)
+  reminds Claude of HISD conventions after any `.tmdl` change — regardless of
+  which skill (vendored or first-party) drove the edit. Reference copy at
+  `skills/semantic-modeling-prepforai/references/global-hooks.md`.
+- `skills/semantic-modeling-prepforai/references/hisd-power-bi-context.md`:
+  consolidated HISD-specific content (synonym glossary, AI Instructions
+  template, dual synonym-annotation mechanics, AI-consumer compatibility
+  matrix, phantom-annotations list, relationship naming pattern) delivered by
+  the hooks above.
+- Fixed a pre-existing defect in the global `memory-architect` skill (outside
+  this repo, `~/.claude/skills/memory-architect/`): its JIT-delivery design
+  claimed a `PreToolUse` hook could inject `additionalContext` — verified
+  false against official docs and a closed GitHub issue. Corrected to
+  `PostToolUse` with `hookSpecificOutput.additionalContext` (not
+  `updatedToolOutput`, which replaces rather than appends).
+- `skills/github-mastery/SKILL.md`: promoted "never commit to a protected
+  branch" to an explicit Guardrail with a pre-commit branch check, backed by a
+  new global `PreToolUse` hook (`~/.claude/hooks/protect-branches.js`) that
+  denies `git commit` on `main`/`master`/`staging`/`develop`.
 
 ### Changed
 - `memory-architect/SKILL.md`: AUDIT and SCAFFOLD modes now call
@@ -37,11 +58,22 @@ tag — this repo doesn't version by release.
   renamed to `hooks/*.cjs` for `rayfin-companion` after both real installs threw
   `ReferenceError: require is not defined` in the target projects' ESM
   (`"type": "module"`) `package.json`.
+- `skills/semantic-modeling-prepforai/`: deprecated as an actively-invoked
+  skill. `SKILL.md` reduced to a deprecation notice; the manual copy/paste
+  TMDL workflow and its Truncation Prevention protocol are obsolete now that
+  editing happens via MCP-first tools. Folder retained only because it's
+  still `scripts/sync_engine.py`'s distribution vehicle to `~/.claude/skills/`
+  and `~/.agents/skills/`, which the new global hooks read from.
+- `manifests/origins.json`: updated the `semantic-modeling-prepforai` excluded
+  entry's `reason` to explain the deprecation and why the folder still exists.
 
 ### Removed
 - `skills/rayfin-companion/rayfin-companion/` — stale nested duplicate (byte-
   identical reference files, missing only `data-app-template.md` versus the
   root copy).
+- `skills/semantic-modeling-prepforai/references/ai-compatibility-matrix.md`,
+  `references/naming-conventions.yml`: content absorbed into
+  `references/hisd-power-bi-context.md`.
 
 ## 2026-07-07
 

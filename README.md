@@ -103,7 +103,7 @@ auto-load `.claude/CLAUDE.md` at session start, while humans land here via GitHu
 | search-consumption-cli | [`search-consumption-cli/`](skills/search-consumption-cli/) | Discover and inspect Fabric items and artifacts across workspaces. |
 | semantic-model-authoring | [`semantic-model-authoring/`](skills/semantic-model-authoring/) | Develop and manage Power BI semantic models across Desktop, PBIP, and Fabric. |
 | semantic-model-consumption | [`semantic-model-consumption/`](skills/semantic-model-consumption/) | Query Power BI semantic model metadata and execute DAX analysis. |
-| semantic-modeling-prepforai | [`semantic-modeling-prepforai/`](skills/semantic-modeling-prepforai/) | TMDL semantic model enhancement and Prep for AI configuration for Power BI Copilot / Fabric Data Agent. |
+| semantic-modeling-prepforai | [`semantic-modeling-prepforai/`](skills/semantic-modeling-prepforai/) | **Deprecated** as an actively-invoked skill (2026-07-10) — HISD content now delivered via global hooks; see `references/hisd-power-bi-context.md`. |
 | skill-creator | [`skill-creator/`](skills/skill-creator/) | Create, edit, evaluate, and optimize Claude Code skills. |
 | spark-authoring-cli | [`spark-authoring-cli/`](skills/spark-authoring-cli/) | Author Fabric Spark notebooks and workloads with CLI workflows. |
 | spark-consumption-cli | [`spark-consumption-cli/`](skills/spark-consumption-cli/) | Analyze Fabric Spark data using PySpark and Spark SQL workflows. |
