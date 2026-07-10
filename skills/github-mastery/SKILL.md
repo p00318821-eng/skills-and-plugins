@@ -33,7 +33,7 @@ description: >
 **Branch Naming (universal pattern)**:
 - Format: `type/scope/description` (lowercase, hyphens for spaces)
 - Examples: `feat/auth/jwt-refresh` · `fix/api/connection-pool` · `docs/readme-update`
-- Protected branches: `main` (production), `staging` (pre-prod), `develop` (integration)
+- Protected branches: `main` (production), `master` (legacy default name), `staging` (pre-prod), `develop` (integration)
 
 **Monorepo Setup** (if applicable):
 - Root .gitignore covers all apps/packages
@@ -57,17 +57,29 @@ description: >
 
 ## Guardrails (non-negotiable)
 
-1. **Credential leak prevention** — ALWAYS flag requests that would commit `.env`, `.key`, connection strings, API tokens, or workspace credentials. Generate secure `.gitignore` patterns for each repo type. For HISD repos, include HISD sensitive-file block (see `references/gitignore-hisd.md`).
-2. **Data sensitivity awareness** — if repo touches sensitive data (FERPA, PII, medical, financial), issue templates must include "Data Scope" field documenting exposure. For HISD: always add FERPA audit trail field.
-3. **Defer to specialists** — when Rayfin decorators, Ed-Fi schema, TMDL syntax, or DAX measures are involved, do not improvise. Flag for `rayfin-companion` or `/microsoft-docs` skill instead.
-4. **Context drives all decisions** — Adapt commit formats, PR templates, branch strategies to the actual repo's stack, conventions (check CLAUDE.md), and domain. Never impose a one-size-fits-all format.
+1. **Never commit directly to a protected branch** (`main`, `master`, `staging`,
+   `develop`, or whatever a repo's own docs name as protected). Before staging
+   or committing, check the current branch (`git branch --show-current`); if
+   it's protected, create and switch to a feature branch first (see Workflow
+   3, "Branch Naming & Strategy," for the naming pattern), then commit there.
+   This is enforced globally by a
+   `PreToolUse` hook on `Bash` (`~/.claude/hooks/protect-branches.js`) that
+   denies `git commit` on a protected branch regardless of which skill or
+   agent issued it — but don't rely on the hook alone; check the branch
+   yourself before running `git commit` too, since the hook is a backstop,
+   not a substitute for getting it right the first time.
+2. **Credential leak prevention** — ALWAYS flag requests that would commit `.env`, `.key`, connection strings, API tokens, or workspace credentials. Generate secure `.gitignore` patterns for each repo type. For HISD repos, include HISD sensitive-file block (see `references/gitignore-hisd.md`).
+3. **Data sensitivity awareness** — if repo touches sensitive data (FERPA, PII, medical, financial), issue templates must include "Data Scope" field documenting exposure. For HISD: always add FERPA audit trail field.
+4. **Defer to specialists** — when Rayfin decorators, Ed-Fi schema, TMDL syntax, or DAX measures are involved, do not improvise. Flag for `rayfin-companion` or `/microsoft-docs` skill instead.
+5. **Context drives all decisions** — Adapt commit formats, PR templates, branch strategies to the actual repo's stack, conventions (check CLAUDE.md), and domain. Never impose a one-size-fits-all format.
 
 ---
 
 ## Workflows (choose based on request)
 
 ### 1. Commit Message Generation
-**When:** User says "write my commit message", "what should I commit as", or describes changes.
+**When:** User says "write my commit message", "what should I commit as", "commit this", or describes changes.
+- **First, if this workflow will actually run `git commit` (not just draft a message):** check the current branch. If it's protected (`main`/`master`/`staging`/`develop`), create and switch to a feature branch before staging anything — see Guardrail 1. Don't skip this because a global hook also enforces it; the hook is a backstop, not a reason to skip the check.
 - Ask: what changed, what type (feat/fix/refactor/docs/test/chore), what scope
 - Output: `type(scope): subject` formatted message (imperative, ≤72 chars, no period)
 - For multi-scope: `type(scope1/scope2): subject`
