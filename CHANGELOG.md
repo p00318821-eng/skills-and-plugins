@@ -5,6 +5,22 @@ tag — this repo doesn't version by release.
 
 ## 2026-07-14
 
+### Changed
+- `scripts/update_engine.py`: Phase 2 update-check now does a cheap ref-only
+  pre-check (`git ls-remote`) against each tracked skill's `last_synced_sha`
+  before falling back to a full shallow clone — skips the clone entirely for
+  anything whose upstream HEAD hasn't moved. Added `stamp_synced_shas()`
+  (also wired into `skills-workflow.ipynb`'s Phase 2 "Apply Decisions" cell)
+  so skills confirmed up to date get their `last_synced_sha` recorded too,
+  not just ones with an applied change — otherwise the pre-check would never
+  have anything to compare against for a skill that's simply unchanged.
+- `scripts/ingest_engine.py`'s `verify_ledger()`: now compares by each
+  manifest entry's `local` path instead of its `name`, and scans `plugins/`
+  in addition to `skills/`. Fixes two false positives: `task-observer`
+  (folder name `one-skill-to-rule-them-all` doesn't match its manifest key)
+  and every plugin-type entry (previously always reported "missing" since
+  the old scan never looked in `plugins/` at all).
+
 ### Added
 - `skills/sdi-backlog-writer/`: own skill (Benjamin Hanna / Houston ISD),
   hand-authored during the Discipline 2.1 SDI Follow-Up session. Converts a

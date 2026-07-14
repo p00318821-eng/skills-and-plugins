@@ -35,6 +35,22 @@ def _run(args: list[str], cwd: Path | None = None) -> str:
 
 
 _clone_cache: dict[tuple[str, str], tuple[Path, str]] = {}
+_head_sha_cache: dict[tuple[str, str], str] = {}
+
+
+def get_remote_head_sha(repo: str, branch: str, cache: dict | None = None) -> str:
+    """Cheap ref-only check (git ls-remote, no tree data transferred) so
+    check_all() can skip a full shallow clone for anything whose HEAD hasn't
+    moved since last_synced_sha. Memoized per (repo, branch) like clone_upstream,
+    since several manifest entries often share one upstream repo."""
+    cache = _head_sha_cache if cache is None else cache
+    key = (repo, branch)
+    if key not in cache:
+        out = _run(["git", "ls-remote", repo, f"refs/heads/{branch}"])
+        if not out:
+            raise RuntimeError(f"branch not found on remote: {repo}@{branch}")
+        cache[key] = out.split()[0]
+    return cache[key]
 
 
 def clone_upstream(repo: str, branch: str, cache: dict | None = None) -> tuple[Path, str]:
@@ -72,6 +88,7 @@ class UpdateReport:
     modified: list[str] = field(default_factory=list)
     local_only: list[str] = field(default_factory=list)
     has_update: bool = False
+    skipped_clone: bool = False
 
 
 def scan_skill(repo_root: Path, skill: dict, ignore: set[str]) -> UpdateReport:
@@ -109,20 +126,34 @@ def unified_diff_for(up_path: Path, local_path: Path, rel: str) -> str:
 
 
 def check_all(repo_root: Path) -> dict[str, UpdateReport]:
-    """Loads origins.json fresh, calls scan_skill for every tracked skill."""
+    """Loads origins.json fresh, checks each tracked skill for updates.
+    Ref-only pre-check first (git ls-remote — no tree data): if the upstream
+    branch HEAD still matches last_synced_sha, skip the full shallow clone
+    entirely and report unchanged. Only clones for skills whose HEAD moved
+    (or that have never been synced)."""
     origins_path = repo_root / "manifests" / "origins.json"
     manifest = json.loads(origins_path.read_text(encoding="utf-8"))
     ignore = set(manifest.get("ignore", []))
 
     results: dict[str, UpdateReport] = {}
     for skill in manifest["skills"]:
+        name = skill["name"]
         try:
-            results[skill["name"]] = scan_skill(repo_root, skill, ignore)
+            last_sha = skill.get("last_synced_sha")
+            if last_sha:
+                head_sha = get_remote_head_sha(skill["repo"], skill["branch"])
+                if head_sha == last_sha:
+                    results[name] = UpdateReport(
+                        skill=skill, head_sha=head_sha, up_files={},
+                        local_dir=repo_root / skill["local"], skipped_clone=True,
+                    )
+                    continue
+            results[name] = scan_skill(repo_root, skill, ignore)
         except Exception as e:
-            results[skill["name"]] = UpdateReport(
+            results[name] = UpdateReport(
                 skill=skill, head_sha="", up_files={}, local_dir=repo_root / skill["local"],
             )
-            results[skill["name"]].error = str(e)  # type: ignore[attr-defined]
+            results[name].error = str(e)  # type: ignore[attr-defined]
     return results
 
 
@@ -137,7 +168,10 @@ def format_update_report(results: dict[str, UpdateReport], show_diffs: bool = Tr
             continue
         lines.append(f"  upstream HEAD: {rep.head_sha}")
         if not rep.has_update:
-            lines.append("  up to date — no changes to apply.")
+            if rep.skipped_clone:
+                lines.append("  up to date — HEAD unchanged since last sync, skipped clone.")
+            else:
+                lines.append("  up to date — no changes to apply.")
         else:
             lines.extend(f"      + (new)      {r}" for r in rep.added)
             lines.extend(f"      ~ (modified) {r}" for r in rep.modified)
@@ -152,6 +186,34 @@ def format_update_report(results: dict[str, UpdateReport], show_diffs: bool = Tr
     updatable = [n for n, r in results.items() if r.has_update]
     lines.append(f"Skills with updates available: {updatable or 'none'}")
     return "\n".join(lines)
+
+
+def stamp_synced_shas(repo_root: Path, results: dict[str, UpdateReport]) -> list[str]:
+    """For skills confirmed up to date this run (has_update=False, whether via
+    the ref-only pre-check or a full clone+diff that found no changes), record
+    last_synced_sha so the NEXT check_all() can skip the clone via
+    get_remote_head_sha. Without this, a skill that's simply unchanged never
+    accumulates a last_synced_sha (apply_decisions only stamps skills it
+    actually applied), so the ref pre-check would never fire for it. Skills
+    with a pending update are left untouched — apply_decisions() stamps those
+    once the user actually applies the change."""
+    origins_path = repo_root / "manifests" / "origins.json"
+    manifest = json.loads(origins_path.read_text(encoding="utf-8"))
+
+    stamped: list[str] = []
+    for s in manifest["skills"]:
+        rep = results.get(s["name"])
+        if not rep or getattr(rep, "error", None) or rep.has_update or not rep.head_sha:
+            continue
+        if s.get("last_synced_sha") != rep.head_sha:
+            s["last_synced_sha"] = rep.head_sha
+            stamped.append(s["name"])
+
+    if stamped:
+        origins_path.write_text(
+            json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8",
+        )
+    return stamped
 
 
 def apply_update(repo_root: Path, report: UpdateReport) -> list[str]:
