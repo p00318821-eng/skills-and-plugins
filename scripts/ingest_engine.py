@@ -295,17 +295,27 @@ def apply_ingest(
 # ---------------------------------------------------------------------------
 
 def verify_ledger(repo_root: Path) -> dict:
-    """Re-reads origins.json + scans skills/ dir fresh from disk."""
+    """Re-reads origins.json + scans skills/ and plugins/ fresh from disk.
+    Compares by `local` path (not by manifest `name`), since some entries'
+    folder name doesn't match their manifest key (e.g. `task-observer` lives
+    at `skills/one-skill-to-rule-them-all`) — path-based comparison avoids
+    false positives from that mismatch."""
     origins_path = repo_root / "manifests" / "origins.json"
     origins = json.loads(origins_path.read_text(encoding="utf-8"))
-    skills_dir = repo_root / "skills"
 
-    on_disk = {
-        skill_dir.name for skill_dir in skills_dir.iterdir()
-        if skill_dir.is_dir() and (skill_dir / "SKILL.md").is_file()
-    }
-    in_manifest = {s["name"] for s in origins.get("skills", [])}
-    in_manifest |= {s["name"] for s in origins.get("excluded", [])}
+    entries = origins.get("skills", []) + origins.get("excluded", [])
+    in_manifest = {e["local"] for e in entries if e.get("local")}
+
+    on_disk: set[str] = set()
+    skills_dir = repo_root / "skills"
+    if skills_dir.is_dir():
+        on_disk |= {
+            f"skills/{d.name}" for d in skills_dir.iterdir()
+            if d.is_dir() and (d / "SKILL.md").is_file()
+        }
+    plugins_dir = repo_root / "plugins"
+    if plugins_dir.is_dir():
+        on_disk |= {f"plugins/{d.name}" for d in plugins_dir.iterdir() if d.is_dir()}
 
     orphaned = on_disk - in_manifest
     missing = in_manifest - on_disk
