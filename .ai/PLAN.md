@@ -39,23 +39,15 @@
   Distribution regression check (Phase 4 dry-run for this skill + one
   sibling) is still open — see plan file items 9-11.
 - **Round 2 — Notebook consolidation + memory-architecture tooling, 2026-07-07 —
-  SHIPPED.** Merged three notebooks (`ingest-project.ipynb`, `update-sourced-skills.ipynb`,
-  `sync_orchestrator.ipynb`) into a single `skills-workflow.ipynb` with a phase-selector
-  widget over four independent phases; extracted `scripts/ingest_engine.py` and
-  `scripts/update_engine.py` to de-duplicate logic that previously existed in two parallel
-  implementations each; renamed the CSV scripts to importable underscore modules; retired
-  `scripts/ingest-destination.py` (confirmed no external callers). Built
-  `scripts/compile_claude_md.py` and `scripts/check_doc_links.py` (Python ports of the
-  Standard's compile step + sync-check, since this repo has no Node toolchain) — closes
-  the gap where `.claude/CLAUDE.md` claimed to be a "GENERATED FILE" with no script that
-  generated it. Ran a `memory-architect` AUDIT that caught and fixed: a stray empty
-  `docs/` directory, two stale README license links pre-dating the `skills/` flattening,
-  a duplicated nav table between README and `.claude/CLAUDE.md` (now cross-referenced
-  instead of silently duplicated), and centralized the Constraints section (license +
-  update-exclusion rules) into `ARCHITECTURE.md`. Also generalized the `memory-architect`
-  skill itself (SCAFFOLD step 10 made language-agnostic; new AUDIT dimension 15 for
-  migration cleanliness) since both gaps are reusable lessons, not one-off fixes. Round 1
-  (Hub-and-Spoke adoption) shipped 2026-07-02 — see `.ai/archive/2026-07-shipped.md`.
+  SHIPPED.** Merged three notebooks into `skills-workflow.ipynb` with a
+  phase-selector widget; extracted `scripts/ingest_engine.py`/`update_engine.py`
+  to de-duplicate logic; built `scripts/compile_claude_md.py` and
+  `scripts/check_doc_links.py` (Python ports of the Standard's compile/sync-check
+  steps, since this repo has no Node toolchain). Ran a `memory-architect` AUDIT
+  that fixed several doc-hygiene gaps and generalized the skill itself
+  (language-agnostic SCAFFOLD step, new AUDIT dimension for migration
+  cleanliness). Round 1 (Hub-and-Spoke adoption) shipped 2026-07-02 — see
+  `.ai/archive/2026-07-shipped.md`.
 
 - **Round 4 — Hook/agent extraction (`memory-architect` + `rayfin-companion`),
   2026-07-10 — shipped in this repo, held (not pushed).** Split both skills
@@ -109,7 +101,8 @@ its versioning scheme). Task 0 (this file) is done as of this edit.
    `grill-with-docs` stage-gated (not repo-state-gated), `caveman` dropped,
    `ponytail` kept as a `grill-me` peer. Formalizes a Plan Mode cycle: rough
    plan → verify → branch (trivial inline / hard → record + loop back) →
-   crystallize → execute.
+   crystallize → execute. Complementary to task 10 below (7 = *which skills*
+   fire during planning; 10 = *context-cost shape* of the resulting plan).
 8. **Skill-edit sync-check** — global `PostToolUse` hook on `Edit|Write`
    warning (non-blocking) when `file_path` falls under a hardcoded downstream
    root instead of this repo.
@@ -126,6 +119,12 @@ its versioning scheme). Task 0 (this file) is done as of this edit.
    to also fetch upstream at that historical SHA, not just HEAD — no new
    storage needed. Generalizes to `caveman` too. Full detail in
    `project-memory-template/.ai/PLAN.md`.
+10. **Context-budget-aware planning — SHIPPED 2026-07-14** in
+    `project-memory-template` (new Tier 1 rule
+    `.ai/rules/300-context-budget-planning.md`): classify plan phases by
+    context cost, decide inline vs. delegate (`Agent` tool) vs. gate
+    (human/`/compact` boundary) explicitly in the plan text. Full detail in
+    `project-memory-template/.ai/PLAN.md`.
 
 ## Open Blockers / Decisions
 
@@ -140,9 +139,10 @@ its versioning scheme). Task 0 (this file) is done as of this edit.
 
 ## Resume Pointer
 
-**Active round is Round 4** (hook/agent extraction) — tasks 0, 5, 2, 1 done.
-Next: task 3 (review `github-mastery` for remaining hook/agent
-opportunities), per the build order above. Round 3 remains open in parallel and
+**Active round is Round 4** (hook/agent extraction) — tasks 0, 5, 2, 1, 10 done
+(10 shipped in `project-memory-template`, unordered/low-urgency). Next: task 3
+(review `github-mastery` for remaining hook/agent opportunities), per the
+build order above. Round 3 remains open in parallel and
 unblocked by Round 4: re-run Phase 4 distribution for
 `semantic-modeling-prepforai` and one sibling skill (plan items 9-11), plus
 the trigger-avoidance smoke test (plan item 11). The plugin/skills

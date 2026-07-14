@@ -128,3 +128,16 @@ Local commits are not private — the IDE's Git integration can push to `origin/
 automatically without an explicit `git push`. Treat every local commit as already public;
 this has already happened once (the initial flat-structure commit landed on remote `main`
 without an explicit push).
+
+### Git Bash POSIX paths silently corrupt when passed to native Windows Python
+
+Running `py -c "..."` (or any native Windows Python invocation) from the Bash tool with a
+Git-Bash-style path like `/c/Users/name/.claude/skills` does **not** raise an error — Python's
+`pathlib.Path` doesn't understand that convention and silently resolves it relative to the
+current drive root instead (`/c/Users/...` becomes `C:\c\Users\...`, a bogus tree). This
+already happened once this round: a resync script wrote real skill folders into `C:\c\`
+instead of `C:\Users\...`, and the only visible symptom was a misleading `"created"` status
+where an `"updated"` was expected — no exception, no warning. Fix: use `pathlib.Path.home()`
+or a native Windows-style path string, and prefer running Python-touching commands via
+PowerShell (or plain `py` outside Git Bash) rather than through the Bash tool whenever the
+script resolves paths under the Windows user profile.
