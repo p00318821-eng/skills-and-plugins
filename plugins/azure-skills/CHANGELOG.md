@@ -1,5 +1,89 @@
 # Changelog
 
+## 1.1.93
+
+- feat: add cicd sub skill ([#2838](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2838))
+
+## 1.1.92
+
+- fix: clarify canvas-first reminder ([#2837](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2837))
+
+## 1.1.91
+
+- chore: improve agent instruction and quick start ([#2768](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2768))
+
+## 1.1.90
+
+- fix: remove azd init from Foundry agent creation ([#2812](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2812))
+
+## 1.1.89
+
+- feat: update invocations_ws skill for GA and path-based routing ([#2807](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2807))
+
+## 1.1.88
+
+- eval: migrate azure-compute integration tests to vally eval suite ([#2596](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2596))
+
+## 1.1.87
+
+- fix: use proper tool to execute query in Azure SQL Server ([#2772](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2772))
+
+## 1.1.86
+
+- feat: add canvas-first entry gate for Foundry agent creation ([#2775](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2775))
+
+## 1.1.85
+
+- feature: retire azure-hosted-copilot-sdk skill ([#2556](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2556))
+
+## 1.1.84
+
+- feat: capture and report skill version in telemetry hooks ([#2763](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2763))
+
+## 1.1.83
+
+- eval: migrate azure-prepare integration tests to vally eval suites ([#2721](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2721))
+
+## 1.1.82
+
+- feat: support foundry routine and add it as a sub-skill ([#2743](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2743))
+
+## 1.1.81
+
+- fix: correct toolbox reference docs from live testing ([#2755](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2755))
+
+## 1.1.80
+
+- fix(microsoft-foundry): vnet ([#2754](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2754))
+
+## 1.1.79
+
+- fix: restructure and update skill reference docs for hosted agent creation ([#2737](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2737))
+
+## 1.1.78
+
+- fix(microsoft-foundry): sync latest azd contract and schema ([#2722](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2722))
+
+## 1.1.77
+
+- feat: add guardrails reference docs for hosted agent creation ([#2731](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2731))
+
+## 1.1.76
+
+- fix: Get hooks working in Copilot again ([#2719](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2719))
+
+## 1.1.75
+
+- feat: improve foundry skill in more real user scenarios. ([#2705](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2705))
+
+## 1.1.74
+
+- feat: add skill related knowledge into foundry skill ([#2664](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2664))
+
+## 1.1.73
+
+- fix(microsoft-foundry): improve quick start provision and local run polling ([#2694](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2694))
+
 ## 1.1.72
 
 - fix: add Network Isolation Errors hint to microsoft-foundry SKILL.md ([#2685](https://github.com/microsoft/GitHub-Copilot-for-Azure/pull/2685))

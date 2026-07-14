@@ -23,10 +23,10 @@ Ask the user which consumption methods are planned before scoping the readiness 
 
 The agent's ability to *apply* a Copilot readiness item depends on (a) whether the item lives in TOM model metadata or in PBIP-only artifacts, and (b) where the model lives. 
 
-| Semantic Model Objects                                                                                              | Editing path                                                                                                                                       |
-| -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **TOM metadata** - names, descriptions, relationships, measures, hidden flags, data types, summarization | **Prioritize MCP** (any source).                                                                                                                              |
-| **Everything else** - synonyms, AI instructions, AI Data Schema selection, Verified Answers                    | **Edit PBIP files** under `<Name>.SemanticModel/Copilot/`. Edit directly on a PBIP project, or via Fabric workspace `getDefinition`/`updateDefinition` round-trip. Not via MCP. PBIX files cannot be edited by Agents. |
+| Semantic Model Objects                                                                                   | Editing path                                                                                                                                                                                                           |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TOM metadata** - names, descriptions, relationships, measures, hidden flags, data types, summarization | **Prioritize MCP** (any source).                                                                                                                                                                                       |
+| **Everything else** - synonyms, AI instructions, AI Data Schema selection, Verified Answers              | **Edit PBIP files** under `<Name>.SemanticModel/Copilot/`. Edit directly on a PBIP project, or via Fabric workspace `getDefinition`/`updateDefinition` round-trip. Not via MCP. PBIX files cannot be edited by Agents. Load [pbip.md](pbip.md) to understand the file structure. |
 
 When presenting findings to the user, tag each item with its routing so the user knows which fixes the agent can apply and which require Desktop work.
 

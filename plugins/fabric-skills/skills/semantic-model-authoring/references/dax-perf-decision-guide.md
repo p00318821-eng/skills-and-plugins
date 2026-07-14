@@ -123,7 +123,7 @@ SUMMARIZECOLUMNS ( 'Product'[Category], "Profit Margin", [Profit Margin] )
 
 This context helps distinguish model design issues (missing star schema, bidirectional relationships) from DAX expression problems.
 
-### Step 3: Execute Baseline (1 warm-up + 3 measured runs)
+### Step 3: Execute Baseline (1 warm-up + 2+ measured runs)
 
 For each run:
 
@@ -134,7 +134,7 @@ For each run:
 3. **Derive key metrics** — Total Duration, FE/SE split, SE query count, peak memory, and result row count. See [Understanding FE vs. SE Metrics](#understanding-formula-engine-fe-vs-storage-engine-se-metrics) for derivation from trace events.
 4. Record all metrics, save the full trace events, and save the baseline result data for semantic equivalence checks.
 
-After all runs: discard warm-up, take the **median** of the 3 measured runs as the baseline. If results are inconsistent (>20% spread), run up to 5 more iterations to isolate platform noise from actual query performance. Record the baseline's full metrics, trace events, and CSV result.
+After all runs: discard the warm-up. Start with **2 measured runs**. If timings are close (for example, <20% spread), use the **fastest valid measured duration** as the baseline and record both runs. If the spread is wider, keep adding measured runs until the normal range is clear; discard only protocol-invalid runs (for example, cache not cleared), use the fastest valid duration, and record the full range.
 
 **Isolating measures:** When a query has many measures and the trace is noisy, comment out all but one (or a small group), re-run, and compare. Repeat in groups to isolate which measures drive the majority of total duration.
 
@@ -157,10 +157,10 @@ Using [Section 3 (Tier 1)](./dax-perf-patterns.md#section-3-tier-1-dax-optimizat
 1. Clear the VertiPaq cache (returns the model to the warm + no-cache state — same condition as the baseline measured runs).
 2. Execute the query with trace capture enabled.
 
-**During iteration:** 1 run is sufficient — columns are already resident from baseline, so no warm-up is needed; clearing only the SE cache keeps the warm + no-cache state. Reserve the full protocol (1 warm-up + 3 measured, take median) for the **final confirmation** against the original baseline.
+**During iteration:** No warm-up is needed — columns are already resident from baseline. Clear the SE cache, execute **2 measured runs**, and use the fastest valid duration if timings are consistent. If the spread is wide, run additional measured attempts until normal performance is clear. Reserve the baseline protocol (warm-up + measured runs) for final confirmation against the original baseline.
 
 **Evaluate:**
-- **Improvement = (BaselineDuration − OptimizedDuration) / BaselineDuration × 100**
+- **Improvement = (BaselineDuration − OptimizedDuration) / BaselineDuration × 100** using fastest valid measured durations.
 - **Semantic equivalence:** Compare the CSV result from this run against the baseline CSV — same row count, same columns, same data values. If results differ, the change modified calculation semantics — revert it. Check this **immediately** after each iteration, not after multiple changes.
 
 ### Step 3: Iterate and Escalate
@@ -374,3 +374,11 @@ Fusion is blocked, callbacks are present, or filters resolve iteratively. Fix th
 **Few SE queries + low FE time + high SE duration + low parallelism → Data layout problem**
 
 The DAX is clean but SE scans are slow due to insufficient segments or poor compression. DAX changes will not help — see [Section 5](./dax-perf-patterns.md#section-5-tier-3-model-optimization-patterns) / [Section 6](./dax-perf-patterns.md#section-6-tier-4-direct-lake-optimization-patterns) (General Data Layout Best Practices, DL001–DL002).
+
+---
+
+## Further Reading
+
+- [Analysis Services trace events](https://learn.microsoft.com/analysis-services/trace-events/analysis-services-trace-events)
+- [Horizontal fusion in Power BI and Analysis Services](https://powerbi.microsoft.com/en-us/blog/announcing-horizontal-fusion-a-query-performance-optimization-in-power-bi-and-analysis-services/)
+- [Understand Direct Lake query performance](https://learn.microsoft.com/fabric/fundamentals/direct-lake-understand-storage)
