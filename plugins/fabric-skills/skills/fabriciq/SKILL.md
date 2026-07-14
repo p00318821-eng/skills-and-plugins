@@ -1,13 +1,14 @@
 ---
 name: fabriciq
 description: >
-  Answer business questions by querying Power BI reports and dashboards through the FabricIQ MCP endpoint.
-  Orchestrates: discover Power BI artifacts, inspect report/model schemas, resolve entity values, generate DAX, execute queries.
-  Returns plain-language answers from Power BI semantic models.
-  Use when the user asks a natural-language question about Power BI report or dashboard content (not raw DAX).
-  Triggers: "ask power bi", "PBI question", "discover report", "report data",
+  Answer natural-language business questions over existing Power BI reports and dashboards through the FabricIQ MCP endpoint.
+  Orchestrates artifact discovery, schema inspection, entity resolution, DAX generation, and query execution to return plain-language answers.
+  Use when the user asks what, which, compare, rank, explain, or summarize questions about Power BI report or dashboard content (not raw DAX).
+  For raw DAX execution (EVALUATE statements) or model metadata inspection (INFO functions), use `semantic-model-consumption`. For upload/download/publish/list/delete report items or PBIR definitions, use `powerbi-report-management`. For PBIR file/page/visual edits, use `powerbi-report-authoring`.
+  Triggers: "ask power bi", "PBI question", "discover my Power BI report", "report data",
   "dashboard data", "what are the top", "show me the power bi data",
-  "which products sold", "compare sales in report".
+  "which products sold", "compare sales in report", "which customers churned",
+  "ask the Power BI report".
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**
@@ -55,6 +56,8 @@ You help users analyze Power BI data. You orchestrate each step: discover artifa
 ### MUST DO
 
 - **Read metadata and schema fully before generating queries** — Always read the `GetReportMetadata` and `GetSemanticModelSchema` tool results in full before proceeding. Follow any instructions that these tools provide (e.g., CustomInstructions, VerifiedAnswers). Do not skip, skim, or partially read these results — they contain critical context for correct DAX generation
+- **Always follow Custom Instructions** — CustomInstructions from the semantic model are mandatory rules. Read them in full, apply them to every DAX query you write (e.g., default date filters, required measures, naming rules). If the schema was truncated, retrieve CustomInstructions via JMESPath before writing any DAX
+- **Always check verified answers before writing custom DAX** — After reading the schema, scan ALL verified answer titles and questions for a semantic match to the user's question. If a match exists, use it. Do not write ad-hoc DAX when a verified answer covers the same intent
 - **Source-bound** — never invent facts or use external data; rely only on Power BI artifacts
 - **Always discover first** — call `DiscoverArtifacts` unless you already have the artifact ID
 - **Never invent data** — only use results from tools
@@ -86,9 +89,11 @@ You help users analyze Power BI data. You orchestrate each step: discover artifa
 
 2. **Inspect the report** — If the artifact is a Report, call `GetReportMetadata(reportObjectId=...)` **without the `queries` parameter** to get the full response first. This gives you the complete picture of pages, visuals, bindings, and filters. Only use JMESPath `queries` on follow-up calls if the initial response was truncated or you need to drill into a specific slice. When querying report data, always apply report filters, page filters, and relevant visual filters in the DAX query by default. Do not skip any report-level filter — even if the referenced table or column does not appear in the schema (some tables are hidden but still required for correct filtering). Use `TREATAS` to apply such filters, e.g. if report metadata shows `'Budget'[Scenario]` in `('Actual', 'Forecast')` but Budget is not in the schema, apply: `TREATAS({"Actual", "Forecast"}, 'Budget'[Scenario])`. When the user's question explicitly contradicts a filter (e.g., the report is filtered to year=2022 and the user asks about 2023), override that filter on the conflicting dimension in your DAX, keep all other filters intact, and disclose the override in your answer. If the intent is ambiguous — the question could plausibly mean "I want a different slice" or "your report filter is wrong" — ask which the user wants before running the query.
 
-3. **Analyze schema** — Call `GetSemanticModelSchema(artifactId=...)` **without the `queries` parameter** to get the full schema first. This gives you the complete picture of tables, columns, measures, relationships, CustomInstructions (domain-specific guidance from the model author — follow them), and VerifiedAnswers. Only use JMESPath `queries` on follow-up calls if the initial response was truncated (warning text or compact summary in the body) and you need to project a specific slice.
+3. **Analyze schema** — Call `GetSemanticModelSchema(artifactId=...)` **without the `queries` parameter** to get the full schema first. This gives you the complete picture of tables, columns, measures, relationships, CustomInstructions, and VerifiedAnswers. **Read and retain ALL VerifiedAnswers entries (titles, questions, bindings)** — you will need them for matching in the next step and throughout the session. Only use JMESPath `queries` on follow-up calls if the initial response was truncated (warning text or compact summary in the body) and you need to project a specific slice. **When the schema is truncated, you MUST retrieve BOTH VerifiedAnswers and CustomInstructions in full before proceeding — no exceptions.** Prioritize retrieval in this order: (1) VerifiedAnswers — `schema.VerifiedAnswers`, (2) CustomInstructions — `schema.CustomInstructions`, (3) tables/measures relevant to the user's question. Do NOT skip either (1) or (2) — both are required for correct DAX generation.
 
-4. **Check for verified answers** — If the model's VerifiedAnswers contains an entry that closely matches the user's question, follow the Verified Answers rules below.
+   **Custom Instructions (MANDATORY — read in full before generating any DAX):** CustomInstructions are domain-specific rules authored by the semantic model owner. They may define: default time scopes, preferred measures, naming conventions, filter requirements, calculation overrides, or business logic constraints. **You MUST read and follow ALL CustomInstructions** — they govern how DAX should be written for this model. If the schema was truncated and you cannot see CustomInstructions, call `GetSemanticModelSchema` with `queries=["schema.CustomInstructions"]` before writing any DAX. Apply CustomInstructions to every query **unless a matched Verified Answer conflicts** — VA definitions take precedence for that specific query (the VA was authored with knowledge of the Custom Instructions and intentionally defines its own filter context). Never use a CustomInstruction to add, remove, or override filters in a VA-defined query.
+
+4. **Check for verified answers (MANDATORY — do this BEFORE writing any custom DAX)** — Scan every verified answer's Title and Question for semantic similarity to the user's question. A VA matches if the user's question addresses the **same metric, entity, dimension, or analysis intent** — even if worded differently (synonyms, rephrasings, different granularity language). Examples of matches: "revenue by region" ↔ "sales breakdown by geography"; "top customers" ↔ "biggest accounts by spend". **When ANY VA closely matches, you MUST use it** — follow the Verified Answers rules below. Do not skip this step or fall through to custom DAX when a VA match exists. If the full schema response was truncated and you cannot see the complete VerifiedAnswers list, call `GetSemanticModelSchema` with `queries=["schema.VerifiedAnswers[].{Title: Title, Question: Question}"]` to retrieve all VA titles before proceeding.
 
 5. **Resolve entity values** — If the user names a concrete value (a specific customer, product, region, etc.), call `ValueSearch(artifactId=<model guid>, searchTerms=[<value>])` against the semantic model before constructing your DAX filter.
 
@@ -133,9 +138,13 @@ Power BI reports and semantic models only. Paginated reports, dashboards, and an
 
 ## Verified Answers
 
+> ⚠️ **Verified answers are the HIGHEST-PRIORITY source of truth.** When a VA matches the user's question, it supersedes any custom DAX you would otherwise write — including any filters or scopes derived from CustomInstructions. Use the VA definition verbatim; apply CustomInstructions only when they don't conflict with the VA's bindings, filters, or granularity, and never modify VA-defined elements based on CustomInstructions alone.
+
 When the semantic model contains verified answers, and one matches the user's question:
 
 1. **Retrieve the full definition** via JMESPath: `schema.VerifiedAnswers[?regex_match(Question, 'keyword')] | [0]`
+   - If the initial schema response already contains the full VA definition, use it directly — no additional call needed.
+   - If you only have titles/questions (from a truncated response), retrieve the full definition now.
 2. The verified answer defines a visual specification — treat it as a blueprint to replicate.
 3. **Build a DAX query that faithfully replicates ALL bindings and filters** — do not substitute, omit, or add any columns or measures beyond what the definition specifies:
    - The `Bindings` object maps visual roles (Rows, Category, Columns, Values, Y, Series, Breakdown, etc.) to columns and measures — the list of keys is not exhaustive. Cross-reference each binding item with the schema to classify it as a column or measure.
@@ -173,9 +182,11 @@ When the semantic model contains verified answers, and one matches the user's qu
 
 | Purpose | Query |
 |---------|-------|
+| **Get Verified Answers (priority 1 when truncated)** | `queries=["schema.VerifiedAnswers[].{Title: Title, Question: Question}"]` |
+| **Get Custom Instructions (priority 2 when truncated)** | `queries=["schema.CustomInstructions"]` |
 | Search measures by keyword | `queries=["schema.Tables[].Measures[?regex_match(to_string(@), 'revenue\|sales')].{Name: Name, Expression: Expression} \| []"]` |
 | Get table details | `queries=["schema.Tables[?Name == 'TABLE_NAME'].{Columns: Columns[].{Name: Name, Type: Type}, Measures: Measures[].{Name: Name, Expression: Expression}} \| [0]"]` |
-| Search verified answers | `queries=["schema.VerifiedAnswers[?regex_match(to_string(@), 'revenue\|sales')] \| [:5].{Title: Title, Question: Question}"]` |
+| Search verified answers by keyword | `queries=["schema.VerifiedAnswers[?regex_match(to_string(@), 'revenue\|sales')] \| [:5].{Title: Title, Question: Question}"]` |
 | List all relationships | `queries=["schema.ActiveRelationships[].{PK: PK, FK: FK}"]` |
 
 ## DAX Rules

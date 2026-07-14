@@ -6,6 +6,7 @@ description: >
   definitions, triggers parameterized refreshes, manages connections, and
   configures output destinations (Lakehouse, Warehouse, ADX, Azure SQL).
   Includes preview-driven authoring loop (executeQuery + customMashupDocument).
+  Lists `supportedConnectionTypes`/`credentialType` per connector.
   For executing saved queries or reading refresh status, use
   `dataflows-consumption-cli`.
   Triggers: "create dataflow", "update dataflow", "delete dataflow",
@@ -15,7 +16,7 @@ description: >
   "bind connection", "list supportedConnectionTypes",
   "dataflow output destination", "dataflow write to lakehouse",
   "dataflow write to warehouse", "dataflow write to ADX",
-  "DataDestinations annotation", "author dataflow".
+  "DataDestinations annotation".
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**
@@ -51,6 +52,8 @@ description: >
 | [authoring-cli-quickref.md](references/authoring-cli-quickref.md) | One-liner recipes, status enums, base64 helpers, connection-binding quick patterns |
 | [authoring-script-templates.md](references/authoring-script-templates.md) | Full bash + PowerShell templates; end-to-end smoke test; LRO polling pattern |
 | [connection-management.md](references/connection-management.md) | List/create/inspect connections; `supportedConnectionTypes`; resolve `ClusterId`; ID format cheat sheet |
+| [connectors.md](references/connectors.md) | M-side source connectors: live-verified function inventory, Lakehouse deep navigation, runtime-disabled functions (`Web.Page`, `Web.BrowserContents`), `Html.Table` / `Csv.Document` / `Json.Document` patterns |
+| [m-language.md](references/m-language.md) | M language semantics for Dataflow Gen2: `try` record shapes, per-cell error wrapping in column transforms, `each` scoping in row vs sub-table contexts, optional field access `[?]` / `Record.FieldOrDefault`, quoted identifiers, sandbox-disabled symbols (`File.Contents`) |
 | [mashup-preview.md](references/mashup-preview.md) | `executeQuery` contract: bootstrap branch, auto-wrap rule, hard avoid for unbounded preview |
 | [output-destinations.md](references/output-destinations.md) | Output destination patterns: Lakehouse Table, Lakehouse Files, Warehouse, ADX, Azure SQL. `DataDestinations` annotation, hidden query, `loadEnabled` rules, connection limitations |
 
@@ -139,7 +142,7 @@ Use this when **the dataflow does not yet exist**. Covers the full happy path: d
 4. **Create the dataflow shell.** `POST /v1/workspaces/{ws}/dataflows` with `{"displayName":"…"}` returns sync 201. The `definition` field is optional at create time and can be set in the next step.
 5. **Save M + connection bindings in one call.** `POST /v1/workspaces/{ws}/dataflows/{df}/updateDefinition?updateMetadata=true` with three parts: `mashup.pq` (real `Web.Contents` / `Sql.Database` / …), `queryMetadata.json` (with `connections[]` populated; each `connectionId` is the stringified composite `{"ClusterId":"…","DatasourceId":"…"}`), and `.platform`. Typically returns sync 200; may return 202 + LRO `Location` on large bodies — handle both.
 6. **Verify the binding persisted.** Re-call `getDefinition`, decode `queryMetadata.json`, and confirm `connections[]` is intact. **Do not** use `GET /items/{id}/connections` for verification — that endpoint reflects refresh-materialized state, not the persisted definition, and returns 0 even after a successful bind. See [AVOID](#avoid).
-7. **(Optional) Validate via executeQuery before refresh.** `POST /v1/workspaces/{ws}/dataflows/{df}/executeQuery` with body `{"QueryName":"<shared-member>"}` (top-level, **PascalCase** `QueryName`). See [Workflow C](#c-preview-driven-authoring-loop).
+7. **(Encouraged) Offer to preview output as ASCII charts.** Ask the user: *"Would you like me to preview the data as charts before the first refresh?"*. In this create flow the definition is already saved in step 5, so the chart preview here is a **post-save validation gate before you materialize via refresh** — not a pre-save step. (If instead you want to validate *candidate* M **before** the first `updateDefinition` — e.g. iterating on the M, or bootstrap-binding a credentialed source so `executeQuery` can see it — use the pre-persist [Preview-Driven Authoring Loop](#c-preview-driven-authoring-loop); the chart rendering is identical, only the ordering relative to the save differs.) If accepted, call `executeQuery` for each entity, parse the Arrow IPC stream, render line charts (time-series) or horizontal bar charts (categories) via `references/charts/line_chart.py` / `references/charts/bar_chart.py`, and ask the user to confirm before proceeding. Details: [mashup-preview.md § ASCII chart preview](references/mashup-preview.md#ascii-chart-preview-optional). If declined, proceed directly to step 8.
 8. **(Optional) Trigger refresh** to materialize. `POST .../jobs/instances?jobType=Refresh` with body `{"executionData":{"executeOption":"ApplyChangesIfNeeded"}}`. **`ApplyChangesIfNeeded` is required on the first refresh after any definition change** — without it, Fabric refreshes the previously-applied definition. Poll the LRO until `status` is `Completed` (refresh enum) or `Failed`/`Cancelled`.
 
 ```bash
@@ -188,7 +191,7 @@ Use this when the dataflow already exists. Canonical Discover → Formulate → 
 1. **Discover** — list workspaces, list dataflows, `getDefinition` (decode `mashup.pq` and `queryMetadata.json`). Validate all `connections[]` entries via `GET /v1/connections/{id}`.
 2. **Formulate** — modify M, re-encode parts, ensure every referenced `connectionId` exists in the caller's connection store.
 3. **Execute** — `POST .../updateDefinition?updateMetadata=true` with **all 3 parts** (full replacement). Optionally trigger refresh.
-4. **Verify** — re-call `getDefinition` to confirm changes; poll refresh LRO; for refresh failures, isolate M+source via `executeQuery` before re-triggering.
+4. **Verify** — re-call `getDefinition` to confirm changes; poll refresh LRO; for refresh failures, make at most **one** `executeQuery` isolation attempt to localize a fixable M/source issue. On a terminal/non-retriable failure (`isRetriable: false`, workspace-wide `UnknownException`), surface the raw error and **stop** rather than re-triggering.
 
 ```bash
 # Concise skeleton — full templates: references/authoring-script-templates.md
@@ -230,22 +233,11 @@ done
 #    Full LRO polling: references/authoring-script-templates.md.
 ```
 
-### C. Preview-Driven Authoring Loop (pre-save executeQuery — see [mashup-preview.md](references/mashup-preview.md))
+### C. Preview-Driven Authoring Loop (pre-save executeQuery — see [mashup-preview.md](references/mashup-preview.md#preview-driven-authoring-loop))
 
-When the change touches Power Query M (new query, edited mashup, new source, changed parameters), preview the candidate `customMashupDocument` against the dataflow's bound connections **before** persisting. Catches syntax, schema, and credential errors at authoring time. Full prerequisites, bootstrap branch, auto-wrap rule, hard-avoid for unbounded preview, and Apache Arrow handling: [mashup-preview.md](references/mashup-preview.md).
+When the change touches Power Query M (new query, edited mashup, new source, changed parameters), preview the candidate `customMashupDocument` against the dataflow's bound connections **before** persisting. Catches syntax, schema, and credential errors at authoring time. Full ordered steps, bootstrap branch, auto-wrap rule, hard-avoid for unbounded preview, ASCII chart preview, and Apache Arrow handling: [mashup-preview.md § Preview-Driven Authoring Loop](references/mashup-preview.md#preview-driven-authoring-loop).
 
 > **Intent split.** This workflow is for the *pre-save* intent. To execute a **saved** query (`QueryName` only) or run an **ad-hoc read-only** `customMashupDocument` with no intent to persist, use [`dataflows-consumption-cli`](../dataflows-consumption-cli/SKILL.md#query-evaluation). `mashup-preview.md` is the shared API reference for both intents.
-
-Minimal ordered steps:
-
-1. **Locate or create the dataflow shell** — `POST /v1/workspaces/{ws}/dataflows` with `{"displayName":"…"}` (workflow A step 4).
-2. **Ensure connections are bound** — for new credentialed sources, do a minimal `updateDefinition` with `queryMetadata.json connections[]` first (the "bootstrap save"). A `connections[]` array declared only in the initial create payload is **not** yet visible to `executeQuery`.
-3. **Compose the candidate `customMashupDocument`** as a complete `section Section1; ...` document. The request's `QueryName` (top-level, PascalCase) must match a `shared` member in the document.
-4. **Preview** — `POST /v1/workspaces/{ws}/dataflows/{df}/executeQuery` with body `{"QueryName": "<name>", "customMashupDocument": "<section>"}`. Pass `--output-file results.arrow` — `az rest` writes the raw Apache Arrow IPC stream to disk. Arrow → CSV/pandas: [dataflows-consumption-cli § Query Evaluation](../dataflows-consumption-cli/SKILL.md#query-evaluation).
-5. **Validate the preview (two-tier — both required before persisting):**
-   - **a. Embedded-error check.** HTTP 200 is **not** proof of success; engine errors are embedded inside the stream as `{"Error":"..."}`. Quick scan: `grep -q '"Error":"' results.arrow`. Canonical pyarrow detector inspects schema metadata — see [mashup-preview.md § Error handling — A](references/mashup-preview.md#detecting-failures-inside-the-arrow-body).
-   - **b. Render `head(10)` as a markdown table to the user.** The embedded-error check only catches engine-level failures (column not found, cast errors, SEM0100, etc.). It does **not** catch *silent-success* bugs: filter dropped all rows, wrong column referenced, wrong join key, off-by-one filter, wrong cast producing epoch dates. The 10-row visual lets the human verify shape, row count, and value sanity in seconds. Snippet + suppression rules: [dataflows-consumption-cli § Example 5b](../dataflows-consumption-cli/SKILL.md#example-5b-render-query-results-as-a-markdown-table).
-6. **Persist via `updateDefinition`** — strip any preview-only `Table.FirstN` / `TOP N` / test-mode parameters from the saved mashup. Verify `queryMetadata.json connections[]` survived the full-replacement write before triggering refresh.
 
 Skip the preview only for metadata-only edits (display name, schedule, `loadEnabled` toggle) or when the agent records an explicit skip reason (bootstrap, prohibitive cost, side-effecting source).
 
@@ -257,11 +249,12 @@ Use this when the dataflow should **write query results to an external store** (
 
 1. **Source query** carries a `[DataDestinations = {[...]}]` annotation referencing the destination query by name.
 2. **Hidden destination query** (suffixed `_DataDestination`) navigates to the target storage using null-safe `?[Data]?` (tables) or `?[Content]?` (files) operators.
-3. **queryMetadata.json** must set `"loadEnabled": false` on the destination query — refresh fails without it.
+3. **queryMetadata.json** must set `"loadEnabled": false` on the destination query — refresh fails without it. State this in your summary using the literal part name (e.g., "set `loadEnabled: false` on the destination query in `queryMetadata.json`").
 4. **Always use `IsNewTarget = true`** for API-created dataflows, even for existing tables.
 5. **Bind the appropriate connection** (Lakehouse: kind `"Lakehouse"`; Warehouse: kind `"Warehouse"`; ADX: kind `"AzureDataExplorer"`; Azure SQL: kind `"Sql"`) with composite `ClusterId`/`DatasourceId` ID.
 6. **First refresh must use `ApplyChangesIfNeeded`** to publish the draft and reconcile annotations.
 7. **All source columns must be typed** — `Any`-type columns are rejected by all destination types.
+8. **Name the definition parts in your written summary.** Because the CLI transcript truncates long command bodies, the final summary (prose, not just shell commands) MUST name the three definition parts by their literal paths — `mashup.pq`, `queryMetadata.json`, and `.platform` — so the part names survive in the answer (e.g., "Saved `mashup.pq` + `queryMetadata.json` + `.platform` via `updateDefinition`"). Do not abbreviate `queryMetadata.json` to "query metadata" or the inner field `queriesMetadata`.
 
 **Supported destinations:**
 
@@ -296,6 +289,7 @@ For connection discovery: [authoring-cli-quickref.md § Connection Discovery and
 
 ### MUST DO
 
+- **Offer to preview every entity before the first refresh of a new dataflow** — after creating the shell and binding connections via `updateDefinition` (which persists the definition), ask the user if they want to see preview charts before materializing via refresh. In the [preview-driven loop](#c-preview-driven-authoring-loop) the preview instead precedes the persisting `updateDefinition`. If accepted, follow [mashup-preview.md § ASCII chart preview](references/mashup-preview.md#ascii-chart-preview-optional). Skip only for metadata-only edits (display name, schedule) or when the agent records an explicit skip reason.
 - **`az login` first** — all `az rest` calls use the active session. No session → 401.
 - **Use `--resource "https://api.fabric.microsoft.com"` for Fabric APIs.** For Power BI v2 (`gatewayClusterDatasources`), use `--resource "https://analysis.windows.net/powerbi/api"` **without a trailing slash** — the slashed form fails `AADSTS500011 invalid_resource`.
 - **Base64-encode all 3 definition parts** — `mashup.pq` + `queryMetadata.json` + `.platform`, each `payloadType: "InlineBase64"`. `updateDefinition` is a full replacement; sending 1 or 2 parts silently drops queries.
@@ -305,8 +299,10 @@ For connection discovery: [authoring-cli-quickref.md § Connection Discovery and
 - **Use the right ID format per context.** REST `/v1/connections` operations take the **plain GUID** from `connection.id`; `queryMetadata.json connections[].connectionId` takes the **stringified composite** `{"ClusterId":"…","DatasourceId":"…"}`. See [connection-management.md § Connection ID Format Cheat Sheet](references/connection-management.md#connection-id-format-cheat-sheet).
 - **Resolve `ClusterId` via list+filter.** `GET .../gatewayClusterDatasources` filtered by `value[?id=='$CONN_ID']`. The per-id route returns `PowerBIEntityNotFound` for cloud connections; newly-created connections may need a 5-15 s retry. See [connection-management.md § Resolving ClusterId](references/connection-management.md#resolving-clusterid-power-bi-v2).
 - **`executeQuery` body uses a top-level `QueryName` field** (PascalCase canonical; the field name itself is case-insensitive on the wire — lowercase `queryName` also evaluates). Value must name a `shared` member from the persisted M or the supplied `customMashupDocument`. The `{"queries":[…]}` array shape **always** fails with `DataflowExecuteQueryError: Invalid query name`; a wrong query name returns `QueryNotFound`. Full contract: [mashup-preview.md § Request body](references/mashup-preview.md).
+- **Use the exact, case-sensitive API names.** The endpoint is `executeQuery` (singular, never `executeQueries`) and the request-body field is `customMashupDocument` (never `mashupDocument`, never base64-encoded — it is a plain UTF-8 M string). The same M body becomes the saved `mashup.pq` part referenced as `customMashupDocument`. Vocabulary table: [mashup-preview.md § Vocabulary](references/mashup-preview.md#vocabulary----name-the-things-you-send).
 - **First refresh after any `updateDefinition` MUST use `executeOption: "ApplyChangesIfNeeded"`.** Body: `{"executionData":{"executeOption":"ApplyChangesIfNeeded"}}`. Without it, Fabric refreshes the previously-applied definition.
-- **Call `GET /v1/connections/supportedConnectionTypes` before `POST /v1/connections`** — never guess parameter names or credential types; they vary by connector, tenant, and time.
+- **Treat a terminal refresh failure as a stop condition — do not debug-loop.** When a refresh/LRO job reaches terminal `Failed`/`Cancelled`, or a backend error carries `isRetriable: false` (or a workspace-wide `UnknownException`), report the raw error verbatim and **stop**. These are backend/infra outcomes the agent cannot fix by retrying — do not re-trigger the refresh, keep re-polling, or open an extended investigation. At most, make **one** `executeQuery` isolation attempt to localize a fixable M/source cause; if that does not reveal a definition-side issue, end and surface the error.
+- **Call `GET /v1/connections/supportedConnectionTypes` before `POST /v1/connections`** — never guess parameter names or credential types; they vary by connector, tenant, and time. When summarizing a connector's required parameters or `credentialType` set for a user, use the exact, case-sensitive endpoint path `GET /v1/connections/supportedConnectionTypes`.
 - **Validate referenced connections before refresh.** For each `connectionId` in `queryMetadata.json`, `GET /v1/connections/{id}` (plain GUID extracted from the composite). Cryptic `EntityUserFailure` at refresh time is often a missing/inaccessible connection. See [connection-management.md](references/connection-management.md).
 - **Bootstrap-bind connections before previewing credentialed M.** A `connections[]` array in the initial create payload is **not** yet visible to `executeQuery`; persist it through at least one `updateDefinition` first. Detail: [mashup-preview.md § Bootstrap branch](references/mashup-preview.md#bootstrap-branch--new-dataflow--new-credentialed-source).
 - **Send a full `section Section1; ...` document in `customMashupDocument`** — `executeQuery` does not auto-wrap raw expressions. See [mashup-preview.md § customMashupDocument format](references/mashup-preview.md#custommashupdocument-format).
@@ -316,6 +312,7 @@ For connection discovery: [authoring-cli-quickref.md § Connection Discovery and
 
 ### AVOID
 
+- **Materializing a new dataflow (first refresh) without offering the user a preview** — the user cannot validate that the M code matches their intent by reading code alone. Always offer to preview each entity's output as an ASCII chart before the first refresh (and, in the preview-driven loop, before the persisting `updateDefinition`). The user may decline, but the offer should always be made.
 - **Adding a `format` property to `definition`** — Items API uses `parts[]` only; `"format": "json"` returns `400 InvalidDefinitionFormat`.
 - **Hardcoded workspace/dataflow GUIDs** — discover via REST API (Connection section).
 - **Using `GET /v1/workspaces/{ws}/items/{itemId}/connections` to verify a freshly-bound dataflow.** It reflects refresh-materialized state, **not** the persisted definition, and returns 0 after a successful bind. Verify via `getDefinition` + decode `queryMetadata.json.connections[]`.
@@ -347,6 +344,7 @@ For connection discovery: [authoring-cli-quickref.md § Connection Discovery and
 - **`"Automatic"` for parameter type in job execution** — lets the engine infer from definition.
 - **Env vars (`WS_ID`, `DF_ID`, `API`, `RESOURCE`)** for script reuse.
 - **Batch connection validation** — loop over `queryMetadata.json connections[]` and `GET /v1/connections/{id}` in one pass before refresh; optionally `POST /v1/connections/{id}/testConnection` to catch rotated credentials.
+- **Offer preview charts** before committing a new dataflow — render sample data as an ASCII chart so the user can validate the output shape and values.
 
 ### TROUBLESHOOTING
 
@@ -524,14 +522,43 @@ LOCATION=$(curl -sS -X POST \
   "https://api.fabric.microsoft.com/v1/workspaces/${WS_ID}/dataflows/${DF_ID}/jobs/instances?jobType=Refresh" \
   -o /dev/null -D - | tr -d '\r' | grep -i "^location:" | awk '{print $2}')
 
-# Poll until terminal (Fabric refresh job status enum: NotStarted / InProgress / Completed / Failed / Cancelled).
-while true; do
+# Poll while the status is non-terminal. Fabric refresh job status enum:
+#   NotStarted / InProgress   -> non-terminal, keep polling
+#   Completed                 -> success
+#   Failed / Cancelled        -> terminal backend outcome (fatal-stop)
+#   Deduped                   -> another refresh is already running; this trigger was skipped (NOT success)
+# Treat ONLY NotStarted/InProgress as non-terminal and break on anything else, so a newly-added
+# terminal status surfaces immediately instead of waiting out MAX_POLLS (the contract notes more
+# status values may be added over time). MAX_POLLS bounds the wait if the job never terminates.
+ATTEMPT=0; MAX_POLLS="${MAX_POLLS:-60}"
+while [ "$ATTEMPT" -lt "$MAX_POLLS" ]; do
   STATUS=$(az rest --method get --url "$LOCATION" \
     --resource "https://api.fabric.microsoft.com" --query "status" -o tsv)
   echo "Status: $STATUS"
-  [[ "$STATUS" == "Completed" || "$STATUS" == "Failed" || "$STATUS" == "Cancelled" ]] && break
-  sleep 10
+  case "$STATUS" in NotStarted|InProgress) ;; *) break ;; esac
+  sleep 10; ATTEMPT=$((ATTEMPT + 1))
 done
+case "$STATUS" in
+  Completed) : ;;  # success (exit 0)
+  Deduped)
+    # Concurrency, not success: another refresh is already running and this trigger was skipped.
+    # Monitor the in-flight instance instead of re-triggering. Exit non-zero so automation does not
+    # mistake a skipped trigger for a completed refresh.
+    echo "Refresh deduplicated — another instance is already running; monitor that instance instead of re-triggering."
+    exit 2 ;;
+  NotStarted|InProgress)
+    # Max-poll bound reached before any terminal status — a polling timeout, NOT a terminal outcome.
+    # Surface the raw job instance and stop; do not assume success.
+    echo "Polling stopped after ${MAX_POLLS} attempts with non-terminal status '$STATUS' (max-poll timeout, not a terminal outcome)."
+    az rest --method get --url "$LOCATION" --resource "https://api.fabric.microsoft.com"
+    exit 1 ;;
+  *)  # Failed / Cancelled (or any other terminal status): a terminal backend outcome — not something
+      # to debug-loop. Surface the job's raw error (the job-instance body's .failureReason, an
+      # ErrorResponse with .errorCode / .isRetriable / .message) and STOP. Do NOT re-trigger or keep
+      # polling when .failureReason.isRetriable=false or the error is workspace-wide.
+      az rest --method get --url "$LOCATION" --resource "https://api.fabric.microsoft.com"
+      exit 1 ;;
+esac
 ```
 
 **PowerShell variant** (`Invoke-WebRequest` exposes response headers natively; avoids the `tr | grep | awk` pipe):
@@ -541,7 +568,10 @@ done
 # - $Resp.Headers["Location"] returns string or string[] depending on PS version — never
 #   use .Location[0] (returns first character on Windows PS 5.1 plain-string case).
 # - Wrap Invoke-WebRequest in try/catch on 5.1 (-SkipHttpErrorCheck is PS 7+).
-# - Fabric refresh job status enum: NotStarted / InProgress / Completed / Failed / Cancelled.
+# - Fabric refresh job status enum: NotStarted / InProgress (non-terminal); Completed (success);
+#   Failed / Cancelled (fatal); Deduped (another refresh already running — NOT success). Treat only
+#   NotStarted/InProgress as non-terminal and break on anything else, bounded by a max-poll count, so
+#   a newly-added terminal status surfaces immediately instead of waiting out $MaxPolls.
 #   This is distinct from the LRO operation enum (Running / Succeeded / Failed / Cancelled).
 #   Refresh "success" = "Completed", not "Succeeded".
 # Acquire $Token per common/COMMON-CLI.md § Token-in-Variable Pattern (resource = https://api.fabric.microsoft.com).
@@ -556,12 +586,35 @@ try {
 $Location = $Resp.Headers["Location"]
 if ($Location -is [array]) { $Location = $Location[0] }
 
-while ($true) {
+$Attempt = 0; $MaxPolls = 60
+do {
   $Status = az rest --method get --url $Location `
     --resource "https://api.fabric.microsoft.com" --query "status" -o tsv
   Write-Host "Status: $Status"
-  if ($Status -in 'Completed','Failed','Cancelled') { break }
-  Start-Sleep -Seconds 10
+  if ($Status -notin 'NotStarted','InProgress') { break }
+  Start-Sleep -Seconds 10; $Attempt++
+} while ($Attempt -lt $MaxPolls)
+if ($Status -in 'NotStarted','InProgress') {
+  # Max-poll bound reached before any terminal status — a polling timeout, NOT a terminal outcome.
+  Write-Host "Polling stopped after $MaxPolls attempts with non-terminal status '$Status' (max-poll timeout, not a terminal outcome)."
+  az rest --method get --url $Location --resource "https://api.fabric.microsoft.com"
+  exit 1
+}
+switch ($Status) {
+  'Completed' { }  # success (exit 0)
+  'Deduped' {
+    # Concurrency, not success: another refresh is already running and this trigger was skipped.
+    # Exit non-zero so callers don't treat a skipped trigger as a completed refresh.
+    Write-Host "Refresh deduplicated — another instance is already running; monitor that instance instead of re-triggering."
+    exit 2
+  }
+  default {
+    # Failed / Cancelled (or any other terminal status): a terminal backend outcome — surface the job's
+    # raw error (the job-instance body's .failureReason: .errorCode / .isRetriable / .message) and STOP;
+    # do not re-trigger or debug-loop when failureReason.isRetriable=false or the error is workspace-wide.
+    az rest --method get --url $Location --resource "https://api.fabric.microsoft.com"
+    Write-Error "Refresh terminated '$Status' (not Completed)"; exit 1
+  }
 }
 ```
 
@@ -634,8 +687,9 @@ When this skill completes a task, the agent should return:
 |---|---|
 | **Verbosity** | Concise summary (3–10 lines) of what was created/modified. |
 | **Default format** | Markdown for status reports; fenced JSON code block for single-resource responses; markdown table for list responses. |
-| **Side-effect disclosure** | Explicitly report IDs created/modified/deleted and the target workspace ID. Never imply success without an ID. |
+| **Side-effect disclosure** | Explicitly report IDs created/modified/deleted and the target workspace ID. Never imply success without an ID. When you saved or replaced a dataflow definition, name the parts you wrote in prose — `mashup.pq`, `queryMetadata.json`, `.platform` — since long command bodies are truncated in the transcript and the part names would otherwise be lost. |
 | **Verification** | Re-`GET` the affected resource (dataflow, connection, job instance) and surface its state (e.g., `provisionState`, `status`, `Completed`) before declaring done. |
-| **Error surfacing** | If any step returned a non-2xx status, an LRO `Failed`/`Cancelled`, or an Arrow-stream `{"Error":"..."}`, propagate the raw error verbatim and stop. |
+| **Error surfacing** | If any step returned a non-2xx status, an LRO `Failed`/`Cancelled`, or an Arrow-stream `{"Error":"..."}`, propagate the raw error verbatim and stop. A terminal refresh `Failed`/`Cancelled`, an `isRetriable: false` backend error, or a workspace-wide `UnknownException` is a **fatal-stop** condition — report it and end; do not re-trigger, re-poll, or enter an extended debugging loop. |
 | **Preview rendering (Workflow C)** | After `executeQuery`, render `head(10)` of the result as a markdown table in chat alongside the saved Arrow file — even when the embedded-error check passes. Catches silent-success bugs (filter dropped all rows, wrong column, off-by-one, wrong cast) that the embedded-error detector cannot see. Snippet + suppression rules: [dataflows-consumption-cli § Example 5b](../dataflows-consumption-cli/SKILL.md#example-5b-render-query-results-as-a-markdown-table). |
+| **API names** | When the answer references API endpoints or request-body fields, use their exact, case-sensitive names (`executeQuery`, `customMashupDocument`, `QueryName`, `mashup.pq`, `queryMetadata.json`, `GET /v1/connections/supportedConnectionTypes`) rather than paraphrased or pluralized variants. |
 

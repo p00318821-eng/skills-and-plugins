@@ -230,7 +230,7 @@ Decision tree (pick exactly one — top-down, first match wins):
    - Rationale: deploying TMDL files directly via the Fabric API is more reliable, faster, and avoids unnecessarily loading the model into MCP only to push it back out.
    - **Do NOT** open the PBIP in MCP first and then deploy via MCP. That is an explicit anti-pattern for this workflow.
 2. **Is the model already loaded in a live MCP session** (e.g., just built in-memory, or currently being edited via MCP) **with no PBIP/TMDL files involved?**
-   -> Use MCP `database_operations` Deploy with the target workspace and semantic model name.
+   -> Use MCP tool to deploy with the target workspace and semantic model name.
 3. **Is the model live in Power BI Desktop with no PBIP saved?**
    -> Use MCP Deploy if MCP is connected to Desktop. If MCP is not available, instruct the user to save as PBIP first, then restart this workflow at step 1.
 
@@ -317,7 +317,7 @@ If any check fails, fix the issue and re-run validation.
 
 - **Hardcoded workspace/item IDs** - resolve dynamically via API
 - **Reading TMDL files when MCP is connected** - `view`/`glob` on `*.tmdl` while a Tier 1 MCP session is live is an anti-pattern (see [Tool Selection Priority](#tool-selection-priority)).
-- **Hand-authoring TMDL files when MCP is registered** - using `create`/`edit`/file-write tools to scaffold `model.tmdl`, `database.tmdl`, `relationships.tmdl`, or `tables/*.tmdl` is a Tier 1 anti-pattern, including for brand-new models. Build via MCP operations (`database_operations`, `table_operations`, `column_operations`, `relationship_operations`, `measure_operations`, `partition_operations`, `named_expression_operations`) and serialize via `ExportToTmdlFolder` only at the end.
+- **Hand-authoring TMDL files when MCP is registered** - using `create`/`edit`/file-write tools to scaffold `model.tmdl`, `database.tmdl`, `relationships.tmdl`, or `tables/*.tmdl` is a Tier 1 anti-pattern, including for brand-new models. Build and export via MCP tools.
 
 ### DENY
 

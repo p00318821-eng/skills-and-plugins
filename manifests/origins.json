@@ -21,7 +21,7 @@
       "format": "skill-folder",
       "author": "Matt Pocock",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "66898f60e8c744e269f8ce06c2b2b99ce7660d5f"
     },
     {
       "name": "grill-with-docs",
@@ -33,7 +33,7 @@
       "format": "skill-folder",
       "author": "Matt Pocock",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "66898f60e8c744e269f8ce06c2b2b99ce7660d5f"
     },
     {
       "name": "handoff",
@@ -45,7 +45,7 @@
       "format": "skill-folder",
       "author": "Matt Pocock",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "66898f60e8c744e269f8ce06c2b2b99ce7660d5f"
     },
     {
       "name": "improve-codebase-architecture",
@@ -57,7 +57,7 @@
       "format": "skill-folder",
       "author": "Matt Pocock",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "66898f60e8c744e269f8ce06c2b2b99ce7660d5f"
     },
     {
       "name": "mbti-persona",
@@ -93,7 +93,7 @@
       "format": "plugin-package",
       "author": "Microsoft",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "b961296e97a89a39e81e10501c2ef846ad0c54db"
     },
     {
       "name": "powerbi-plugin",
@@ -129,7 +129,7 @@
       "format": "plugin-package",
       "author": "data-goblin",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "7de813c1a531da4f62f3b2fcfaa68a096423be5b"
     },
     {
       "name": "microsoft-docs",
@@ -177,7 +177,7 @@
       "format": "plugin-package",
       "author": "Microsoft",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "40d0f6008a3759c1bfaa6b654cbd3c3b4b580ef6"
     },
     {
       "name": "deep-wiki",
@@ -225,7 +225,7 @@
       "format": "skill-folder",
       "author": "Dietrich Gebert",
       "license": "MIT",
-      "last_synced_sha": null
+      "last_synced_sha": "14a0d79548d4de8fc2de95c1b94bb0de63a739d3"
     }
   ],
   "excluded": [
