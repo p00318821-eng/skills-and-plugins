@@ -3,6 +3,27 @@
 Dated by the day the work actually shipped (per git history), not by release
 tag — this repo doesn't version by release.
 
+## 2026-07-14
+
+### Added
+- `skills/sdi-backlog-writer/`: own skill (Benjamin Hanna / Houston ISD),
+  hand-authored during the Discipline 2.1 SDI Follow-Up session. Converts a
+  9-section HISD SDI Discovery Summary into Azure DevOps Epic/Feature/User
+  Story markdown, mirroring the SDI Azure DevOps Backlog Writer Agent
+  (Copilot Studio). Ingested into this repo via Phase 1 (`ingest_engine.py`)
+  as an "own" classification, registered in `manifests/origins.json`'s
+  `excluded` list, added to `claude-code-user`'s `skills_assigned`.
+
+### Fixed
+- `scripts/ingest_engine.py`'s `apply_ingest`: re-running Phase 1 ingest
+  against an already-onboarded destination (e.g. `claude-code-user`, which
+  is `enabled: true` with 14 skills already assigned) silently reset
+  `enabled` to `false` and replaced `skills_assigned` wholesale instead of
+  merging — discovered while ingesting `sdi-backlog-writer` above. Now
+  merges `skills_assigned` (union) and leaves an existing destination's
+  `enabled` flag untouched; only brand-new destinations get the
+  starts-disabled default.
+
 ## 2026-07-10
 
 ### Added (Round 4 — consolidation phase)

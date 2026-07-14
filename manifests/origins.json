@@ -1,7 +1,15 @@
 {
   "format_version": 2,
   "_comment": "Source-of-truth manifest for externally-sourced skills. Drives skills-workflow.ipynb's Phase 2 (update) and Phase 4 (distribute). 'last_synced_sha' is informational and is stamped by the notebook when an update is applied.",
-  "ignore": [".git", ".github", ".gitignore", ".DS_Store", "node_modules", ".vscode", ".idea"],
+  "ignore": [
+    ".git",
+    ".github",
+    ".gitignore",
+    ".DS_Store",
+    "node_modules",
+    ".vscode",
+    ".idea"
+  ],
   "skills": [
     {
       "name": "grill-me",
@@ -630,6 +638,11 @@
       "name": "wiki-vitepress",
       "local": "skills/wiki-vitepress",
       "reason": "Extracted from deep-wiki plugin; updated via parent plugin entry."
+    },
+    {
+      "name": "sdi-backlog-writer",
+      "local": "skills/sdi-backlog-writer",
+      "reason": "Own skill (Benjamin Hanna / Houston ISD). Hand-authored 2026-07-14 for the Discipline 2.1 SDI Follow-Up session; converts a 9-section HISD SDI Discovery Summary into Azure DevOps Epic/Feature/User Story markdown, mirroring the SDI Azure DevOps Backlog Writer Agent (Copilot Studio)."
     }
   ]
 }

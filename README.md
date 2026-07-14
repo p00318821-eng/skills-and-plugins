@@ -100,6 +100,7 @@ auto-load `.claude/CLAUDE.md` at session start, while humans land here via GitHu
 | r-visuals | [`r-visuals/`](skills/r-visuals/) | Create R-powered visuals for Power BI reports. |
 | rayfin-companion | [`rayfin-companion/`](skills/rayfin-companion/) | Code-generation and architecture guidance for Microsoft Fabric Apps on the Rayfin platform. |
 | review-report | [`review-report/`](skills/review-report/) | Review Power BI report definitions and suggest improvements. |
+| sdi-backlog-writer | [`sdi-backlog-writer/`](skills/sdi-backlog-writer/) | Convert an HISD SDI Discovery Summary into Azure DevOps Epic/Feature/User Story markdown. |
 | search-consumption-cli | [`search-consumption-cli/`](skills/search-consumption-cli/) | Discover and inspect Fabric items and artifacts across workspaces. |
 | semantic-model-authoring | [`semantic-model-authoring/`](skills/semantic-model-authoring/) | Develop and manage Power BI semantic models across Desktop, PBIP, and Fabric. |
 | semantic-model-consumption | [`semantic-model-consumption/`](skills/semantic-model-consumption/) | Query Power BI semantic model metadata and execute DAX analysis. |
@@ -173,6 +174,7 @@ Authored by Benjamin Hanna (Houston ISD):
 
 - **pbi-visual-rendering**, **semantic-modeling-prepforai**
 - **github-mastery**, **k12-dashboard-mockup**, **rayfin-companion**
+- **sdi-backlog-writer**
 
 ### Matt Pocock — Skills for Real Engineers
 

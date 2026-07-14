@@ -255,21 +255,28 @@ def apply_ingest(
         json.dumps(origins, indent=2, ensure_ascii=False) + "\n", encoding="utf-8",
     )
 
-    new_dest = {
-        "id": scan.dest_id,
-        "environment": scan.dest_id.replace("_", "-"),
-        "type": "skill-folder",
-        "method": "skill-folder-copy",
-        "target_dir": target_dir,
-        "skills_assigned": sorted(skills_assigned),
-        "enabled": False,
-    }
     existing_dest = next(
         (d for d in destinations["destinations"] if d["id"] == scan.dest_id), None
     )
     if existing_dest is not None:
-        existing_dest.update(new_dest)
+        # Re-running ingest against an already-onboarded destination must not
+        # clobber its live state: merge skills_assigned (union, don't replace)
+        # and leave `enabled` untouched. Replacing either wholesale would
+        # silently disable an active destination or drop skills assigned
+        # outside this scan's view.
+        merged_skills = sorted(set(existing_dest.get("skills_assigned", [])) | set(skills_assigned))
+        existing_dest["skills_assigned"] = merged_skills
+        existing_dest["target_dir"] = target_dir
     else:
+        new_dest = {
+            "id": scan.dest_id,
+            "environment": scan.dest_id.replace("_", "-"),
+            "type": "skill-folder",
+            "method": "skill-folder-copy",
+            "target_dir": target_dir,
+            "skills_assigned": sorted(skills_assigned),
+            "enabled": False,
+        }
         destinations["destinations"].append(new_dest)
     destinations_path.write_text(
         json.dumps(destinations, indent=2, ensure_ascii=False) + "\n", encoding="utf-8",
