@@ -5,11 +5,12 @@ description: >
   List dataflows, decode base64 definitions (mashup.pq, queryMetadata.json,
   .platform), discover parameters, retrieve refresh status and job history,
   classify queries by staging, and execute queries against saved dataflows via
-  the read-side `executeQuery` mashup engine (Arrow IPC response). Three
-  executeQuery read modes: (a) execute a persisted query by QueryName,
-  (b) run an ad-hoc read-only customMashupDocument **with no intent to persist**,
-  (c) parse and render Arrow results. For previewing candidate M before
-  persisting via updateDefinition, use `dataflows-authoring-cli`.
+  the read-side `executeQuery` mashup engine (Arrow IPC response). Runs
+  persisted or ad-hoc read-only executeQuery requests; parses/renders Arrow
+  results. For previewing
+  candidate M before persisting, or for `supportedConnectionTypes`/`credentialType`
+  discovery and connection configuration, use `dataflows-authoring-cli`
+  (not this skill).
   Triggers: "list dataflows", "inspect dataflow", "decode dataflow definition",
   "dataflow parameters", "dataflow refresh status", "refresh history",
   "last refresh status", "dataflow job history", "execute dataflow query",
@@ -27,6 +28,17 @@ description: >
 > 1. To find the workspace details (including its ID) from workspace name: list all workspaces and, then, use JMESPath filtering
 > 2. To find a dataflow by name: list all dataflows in the workspace and filter by `displayName` client-side — there is no server-side name filter
 > 3. `getDefinition` is a **POST**, not GET — even though it reads data
+
+> **SCOPE BOUNDARY — READ-ONLY (mandatory)**
+> This skill is **strictly read-only**. You **must never** create, update, or delete
+> a dataflow or its definition — that means **no** `Delete Dataflow`, **no**
+> `Create Dataflow`, **no** `updateDefinition`, and **no** other mutating/destructive
+> call (e.g. `az rest --method delete/put/patch` against a dataflow, or a POST that
+> creates/overwrites). The only permitted POSTs are the explicitly read-side
+> `getDefinition` and `executeQuery` operations documented below.
+> If the user asks to delete, create, modify, or persist a dataflow, **refuse the
+> mutation** and route them to `dataflows-authoring-cli` — do not run the destructive
+> command, even if the user provides the exact API call.
 
 # dataflows-consumption-cli — Dataflows Gen2 Consumption via CLI
 
@@ -59,6 +71,7 @@ description: >
 | Quick Reference One-Liners | [consumption-cli-quickref.md](references/consumption-cli-quickref.md) | `az rest` one-liners for all consumption ops |
 | Discovery Patterns | [discovery-queries.md](references/discovery-queries.md) | Definition decoding, parameter extraction, connection analysis |
 | Script Templates | [script-templates.md](references/script-templates.md) | Copy-paste bash and PowerShell templates |
+| Preview Data Visualization | [chart-visualization.md](references/chart-visualization.md) | Render `executeQuery` results as ASCII line/bar/pie charts (dependency-free) |
 | Tool Stack | [SKILL.md § Tool Stack](#tool-stack) ||
 | Connection | [SKILL.md § Connection](#connection) ||
 | Agentic Exploration ("Chat With My Dataflows") | [SKILL.md § Agentic Exploration](#agentic-exploration-chat-with-my-dataflows) | **Start here** for dataflow exploration |
@@ -137,6 +150,10 @@ az rest --method get --resource "https://api.fabric.microsoft.com" \
   --url "$API/workspaces/$WS_ID/dataflows/$DF_ID"
 
 # 4. Discover parameters
+#    Note: the /parameters endpoint returns DataflowNotParametricError (an HTTP 4xx)
+#    for a non-parametric dataflow (no Power Query parameters). Treat that as
+#    "this dataflow has no parameters" and report it plainly — do NOT surface the
+#    raw error. Optionally confirm by checking mashup.pq for `IsParameterQuery`.
 az rest --method get --resource "https://api.fabric.microsoft.com" \
   --url "$API/workspaces/$WS_ID/dataflows/$DF_ID/parameters" \
   --query "value[].{name:name, type:type, required:isRequired, default:defaultValue}" -o table
@@ -201,7 +218,8 @@ For full platform gotchas: [DATAFLOWS-CONSUMPTION-CORE.md](../../common/DATAFLOW
 | `403 Forbidden` on `getDefinition` | Viewer role (Read-only) | Requires Contributor role or higher (Read+Write) |
 | `404 Not Found` | Wrong workspace or dataflow ID | Re-discover via List Dataflows API |
 | `getDefinition` returns `202` | Large definition or server load | Poll the `Location` header URL until operation completes |
-| Empty parameters array | Dataflow has no parameters | Expected behavior — check mashup.pq for `IsParameterQuery` |
+| `DataflowNotParametricError` (4xx) on `/parameters` | Dataflow has no Power Query parameters (non-parametric) | Expected — report "this dataflow has no parameters"; do not surface the raw error. Optionally confirm via mashup.pq `IsParameterQuery` |
+| Empty / absent `connections` array in `queryMetadata.json` | Queries use an inline/literal source (e.g. `#table()`), so there is no external connection to bind | Expected — report "no external data source connections (inline source)"; do not fabricate a binding |
 | Base64 decode shows garbled text | BOM in encoded content | Strip UTF-8 BOM (`\xEF\xBB\xBF`) when decoding |
 | `429 TooManyRequests` | Rate limited | Respect `Retry-After` header; implement exponential backoff |
 | Duplicate results in list | Re-using stale continuationToken | Always use the token from the most recent response |
@@ -483,6 +501,6 @@ When this skill completes a task, the agent should return:
 |---|---|
 | **Verbosity** | Concise summary (3–10 lines) for status; markdown table for list/inspect responses. |
 | **Default format** | Markdown table for `list`-style queries; fenced JSON code block for single-resource responses; raw decoded `mashup.pq` in a fenced ` ```m ` block. For `executeQuery`: save the full Arrow stream to file **and** render `head(N)` (default `N=10`) as a markdown table in chat — see [Example 5b](#example-5b-render-query-results-as-a-markdown-table). Suppress rendering only on explicit user request, when `rows > 1000` (render head + total-count note), or when the result is being streamed into another tool. |
-| **Side-effect disclosure** | This is a **read-only** skill — never imply mutation. |
+| **Side-effect disclosure** | This is a **read-only** skill — never imply mutation, and **refuse** any create/update/delete request (route to `dataflows-authoring-cli`). |
 | **Verification** | Include the source URL (e.g., the `az rest --url` value) in the response so the user can reproduce the call. |
 | **Error surfacing** | If `executeQuery` returns Arrow with embedded `{"Error":"..."}`, surface the error verbatim and do not present partial results as success. |

@@ -161,9 +161,9 @@ VAR Result =
 **Anti-pattern:**
 ```dax
 SUMMARIZE(
-    CALCULATETABLE('Sales', 'Sales'[Year] = 2023, 'Sales'[CustomerKey] IN SellingPOCs),
+    CALCULATETABLE('Sales', 'Sales'[Year] = 2023, 'Customer'[Segment] = "Enterprise"),
     'Sales'[CustomerKey],
-    "DistinctSKUs", DISTINCTCOUNT('Sales'[StoreKey])
+    "DistinctStores", DISTINCTCOUNT('Sales'[StoreKey])
 )
 ```
 
@@ -172,10 +172,10 @@ SUMMARIZE(
 CALCULATETABLE(
     SUMMARIZECOLUMNS(
         'Sales'[CustomerKey],
-        "DistinctSKUs", DISTINCTCOUNT('Sales'[StoreKey])
+        "DistinctStores", DISTINCTCOUNT('Sales'[StoreKey])
     ),
     'Sales'[Year] = 2023,
-    'Sales'[CustomerKey] IN SellingPOCs
+    'Customer'[Segment] = "Enterprise"
 )
 ```
 
@@ -253,16 +253,20 @@ CALCULATE( COUNTROWS('Sales'), 'Sales'[Amount] > 1000 )
 // Use: SUMX( 'Sales', 'Sales'[Unit Price] * 'Sales'[Quantity] )
 ```
 
-2. **Reduce number of columns:**
+2. **Iterate over a narrow key table:**
 ```dax
-// Instead of: SUMX( 'Account', [Total Sales] )
-// Use: SUMX( VALUES ( 'Account'[Account Key] ), [Total Sales] )
+// Instead of: SUMX( 'Customer', [Total Sales] )
+// Use: SUMX( VALUES('Customer'[CustomerKey]), [Total Sales] )
 ```
 
 3. **Reduce cardinality before iteration:**
 ```dax
-// Instead of: SUMX( 'Account', [Total Sales] * 'Account'[Corporate Discount] )
-// Use: SUMX( VALUES ( 'Account'[Corporate Discount] ), [Total Sales] * 'Account'[Corporate Discount] )
+// Instead of: SUMX( 'Customer', [Total Sales] * 'Customer'[DiscountRate] )
+// Use only when grouping customers by DiscountRate preserves the result:
+SUMX(
+    VALUES('Customer'[DiscountRate]),
+    [Total Sales] * 'Customer'[DiscountRate]
+)
 ```
 
 ---
@@ -405,8 +409,8 @@ SUMX( VALUES('Customer'[DiscountRate]), CALCULATE(SUM('Sales'[Amount])) * 'Custo
 ```dax
 CALCULATE(
     SUM('Sales'[Amount]),
-    CROSSFILTER('Customer'[CustomerKey], 'SportBridge'[CustomerKey], NONE),
-    TREATAS(VALUES('SportBridge'[CustomerKey]), 'Customer'[CustomerKey])
+    CROSSFILTER('Customer'[CustomerKey], 'CustomerBridge'[CustomerKey], NONE),
+    TREATAS(VALUES('CustomerBridge'[CustomerKey]), 'Customer'[CustomerKey])
 )
 ```
 

@@ -32,7 +32,7 @@ If multiple subscriptions, ask which to use, then `az account set --subscription
 **3. Role permissions:**
 
 ```bash
-az role assignment list --assignee "$(az ad signed-in-user show --query id -o tsv)" --query "[?contains(roleDefinitionName, 'Owner') || contains(roleDefinitionName, 'Contributor') || contains(roleDefinitionName, 'Foundry')].{Role:roleDefinitionName, Scope:scope}" -o table
+az role assignment list --assignee "$(az ad signed-in-user show --query id -o tsv)" --include-groups --include-inherited --scope "/subscriptions/$(az account show --query id -o tsv)" --query "[?contains(roleDefinitionName, 'Owner') || contains(roleDefinitionName, 'Contributor') || contains(roleDefinitionName, 'Foundry')].{Role:roleDefinitionName, Scope:scope}" -o table
 ```
 
 Requires Owner, Contributor, or Foundry Owner. If insufficient — STOP, request elevated access from admin.
@@ -125,7 +125,7 @@ Capture `AZURE_AI_PROJECT_ID`, `AZURE_AI_PROJECT_ENDPOINT`, and `AZURE_RESOURCE_
 > azd ai agent init -m <manifest-url> --no-prompt --deploy-mode code --runtime python_3_13 --entry-point main.py
 > ```
 >
-> Core `azd init` accepts `--subscription` and `-l/--location`; `azd ai agent init` does not. `azd ai agent init` then resolves the model from the chosen sample's manifest and writes it into `azure.yaml services.<name>.config.deployments[]`; the next `azd provision` creates the deployment through Bicep. **You do not need to deploy a model separately for this path** — no `az cognitiveservices` calls, no `azd env set AI_PROJECT_DEPLOYMENTS`.
+> Core `azd init` accepts `--subscription` and `-l/--location`; `azd ai agent init` does not. `azd ai agent init` then resolves the model from the chosen sample's manifest and writes it into `azure.yaml services.ai-project.deployments[]`; the next `azd provision` creates the deployment through Bicep. **You do not need to deploy a model separately for this path** — no `az cognitiveservices` calls, no `azd env set AI_PROJECT_DEPLOYMENTS`.
 >
 > Use [models/deploy-model](../../models/deploy-model/SKILL.md) **only** for out-of-band scenarios: adding models to a Foundry project that is not managed by this azd project, or ad-hoc deployments outside the azd lifecycle.
 

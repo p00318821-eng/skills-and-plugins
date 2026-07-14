@@ -5,6 +5,17 @@ tag — this repo doesn't version by release.
 
 ## 2026-07-14
 
+### Changed
+- Phase 2 upstream update (`scripts/update_engine.py`) run against all 18
+  tracked skills/plugins in `manifests/origins.json`: 8 had upstream changes
+  (`grill-me`, `grill-with-docs`, `handoff`, `improve-codebase-architecture`,
+  `fabric-skills`, `reports-plugin`, `azure-skills`, `ponytail`) and were
+  applied in full, stamping each `last_synced_sha`. The other 10 tracked
+  skills/plugins were already up to date. Notably: `fabric-skills` gained new
+  SQLDB and pipeline-migration skills plus a `fabriciq-ontology-*` pair;
+  `reports-plugin` and `azure-skills` picked up substantial reference-doc
+  additions (report-design guidance, `microsoft-foundry` routine/CI-CD docs).
+
 ### Added
 - `skills/sdi-backlog-writer/`: own skill (Benjamin Hanna / Houston ISD),
   hand-authored during the Discipline 2.1 SDI Follow-Up session. Converts a

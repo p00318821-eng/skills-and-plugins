@@ -281,6 +281,7 @@ Use `json.dumps()` to stringify. **Do NOT use PowerShell's `ConvertTo-Json`.**
 
 ### MUST DO
 
+- **Confirm a real source before authoring** -- when the request targets a specific signal or measurement (for example "temperature > 30"), first resolve the workspace and verify that a discoverable source (Eventhouse/KQL table, Eventstream, Real-Time Hub, or DTB / Ontology) actually exposes that signal. If none does, **stop and ask** which source and fields provide it (plus any missing threshold, recipient, or action details) instead of authoring the rule
 - **Always use `--resource https://api.fabric.microsoft.com`** with `az rest` — without it, token audience is wrong
 - **Always send `--body '{}'`** for `getDefinition` — it is a POST and omitting the body can cause 411 errors
 - **Always Base64-encode** `ReflexEntities.json` payload when calling `updateDefinition`
@@ -307,6 +308,7 @@ Use `json.dumps()` to stringify. **Do NOT use PowerShell's `ConvertTo-Json`.**
 - **Pre-filtering conditions in the KQL query** — return all data from KQL and let the Activator rule steps handle thresholds, text conditions, and dimensional filters. KQL is the data source, not the rule engine
 - **Inline JSON in PowerShell `az rest --body`** — PowerShell mangles quotes and special characters. Always write JSON to a temp file with `[System.IO.File]::WriteAllText($path, $json, [System.Text.UTF8Encoding]::new($false))` and pass `--body @$path`
 - **Reusing display names after deletion** — soft-deleted items hold their name for several minutes. Use a unique name or hard-delete first
+- **Force-fitting a request onto unrelated existing items** -- when no source exposes the requested signal, do NOT create a Reflex or call `updateDefinition` on an unrelated existing Activator / Eventstream to satisfy it; ask for the missing source first
 
 ---
 
