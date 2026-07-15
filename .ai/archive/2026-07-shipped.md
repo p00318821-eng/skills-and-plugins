@@ -1,5 +1,15 @@
 # Shipped — 2026-07
 
+## Round 2 — Notebook consolidation + memory-architecture tooling (2026-07-07)
+
+Merged three notebooks into `skills-workflow.ipynb` with a phase-selector widget;
+extracted `scripts/ingest_engine.py`/`update_engine.py` to de-duplicate logic; built
+`scripts/compile_claude_md.py` and `scripts/check_doc_links.py` (Python ports of the
+Standard's compile/sync-check steps, since this repo has no Node toolchain). Ran a
+`memory-architect` AUDIT that fixed several doc-hygiene gaps and generalized the skill
+itself (language-agnostic SCAFFOLD step, new AUDIT dimension for migration
+cleanliness).
+
 ## Hub-and-Spoke adoption (Compiled-only rung)
 
 **Decision:** Adopted the Hub-and-Spoke Compiled-only rung from

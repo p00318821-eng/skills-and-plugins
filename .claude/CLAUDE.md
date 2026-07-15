@@ -4,7 +4,13 @@
      rule files and recompile. The Navigation Map, Agent SOPs, File Map, and Distribution
      Methods sections are hand-authored boilerplate and may be edited directly. -->
 
-# Agent Operating Instructions — skills-and-plugins
+# Agent Operating Instructions — skills-plugins-hooks-agents
+
+This repo is a **library of tools** (skills, plugins, agent definitions, and — in a
+future round — hooks), distributed outward to many destinations. It is a component
+consumed *by* `project-memory-template`, not a replacement for it: that repo scaffolds
+per-project memory architecture (`.ai/PLAN.md`, `.ai/rules/`, etc.); this repo owns the
+reusable tool definitions themselves. Don't duplicate memory-scaffolding concerns here.
 
 ## Navigation Map
 
@@ -53,6 +59,11 @@ run in order. Phase logic lives in `scripts/`, the notebook is a thin UI shell.
 - **Add a new upstream skill:** add entry to `manifests/origins.json`, run Phase 2.
 - **Add your own skill:** Create `skills/{name}/SKILL.md`, add to `excluded` in origins.json.
 - **Add a destination manually:** Edit `manifests/destinations.json` directly, add entry with `enabled: true`, `method` (skill-folder-copy or markdown-boundary), and `target_dir`/`target_file`.
+- **Add/edit a custom agent:** Create or edit `agents/{name}.md` (frontmatter:
+  `name`, `description`, `model`, `tools`, optionally `maxTurns`), then deploy by
+  copying to `~/.claude/agents/`. No notebook phase covers this yet — it's a manual
+  copy, same as "Add a destination manually" above. First file in a previously
+  empty `~/.claude/agents/` requires a session restart to be picked up.
 
 ## File Map
 
@@ -60,6 +71,7 @@ run in order. Phase logic lives in `scripts/`, the notebook is a thin UI shell.
 |------|---------|
 | `skills/` | Vendored skill folders (each: SKILL.md + references) |
 | `plugins/` | Plugin packages (azure-skills, deep-wiki, fabric, fabric-skills, powerbi, reports) |
+| `agents/` | Custom subagent definitions (central source of truth; `~/.claude/agents/` is the deployed copy) |
 | `manifests/origins.json` | Tracks where each skill is sourced from (v2 format) |
 | `manifests/destinations.json` | Tracks where skills get distributed to |
 | `skills-workflow.ipynb` | Single interactive notebook: Ingest → Update from source → Assign destinations → Distribute |

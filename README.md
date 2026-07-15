@@ -1,11 +1,15 @@
-# skills-and-plugins
+# skills-plugins-hooks-agents
 
-My long-term personal skills library and "Dotfiles for AI" — a curated
-collection of Claude Code skills and plugins, with tooling to pull updates from
-upstream repos and distribute skills to multiple AI tool environments.
+My long-term personal tool library and "Dotfiles for AI" — a curated collection of
+Claude Code skills, plugins, and agent definitions (hooks are a planned future
+addition), with tooling to pull updates from upstream repos and distribute tools to
+multiple AI tool environments. This is a component consumed *by*
+`project-memory-template`, not a substitute for it: that repo scaffolds per-project
+memory architecture; this repo owns the reusable tool definitions themselves.
 
 Each skill lives under `skills/` as a self-contained folder (a `SKILL.md` at its
 root, plus any reference files it needs). Plugin packages live under `plugins/`.
+Custom subagent definitions live under `agents/` (see [agents/README.md](agents/README.md)).
 Third-party skills are vendored here as flat copies; attribution and licensing
 for each are listed below.
 
