@@ -46,9 +46,10 @@ process.stdin.on("end", () => {
     const msgMatch = command.match(COMMIT_MSG_RE);
     if (msgMatch) {
       const message = msgMatch[2] !== undefined ? msgMatch[2] : msgMatch[3];
-      if (message && !COMMIT_FORMAT_RE.test(message)) {
+      const subjectLine = message ? message.split("\n")[0] : message;
+      if (subjectLine && !COMMIT_FORMAT_RE.test(subjectLine)) {
         warnings.push(
-          `Commit message "${message}" doesn't match the expected ` +
+          `Commit message "${subjectLine}" doesn't match the expected ` +
             `\`type(scope): subject\` format (type: ${TYPES.replace(
               /\|/g,
               "/"
