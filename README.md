@@ -1,19 +1,20 @@
 # skills-plugins-hooks-agents
 
 My long-term personal tool library and "Dotfiles for AI" — a curated collection of
-Claude Code skills, plugins, and agent definitions (hooks are a planned future
-addition), with tooling to pull updates from upstream repos and distribute tools to
-multiple AI tool environments. This is a component consumed *by*
-`project-memory-template`, not a substitute for it: that repo scaffolds per-project
-memory architecture; this repo owns the reusable tool definitions themselves.
+Claude Code skills, plugins, agent definitions, and hooks, with tooling to pull
+updates from upstream repos and distribute tools to multiple AI tool environments.
+This is a component consumed *by* `project-memory-template`, not a substitute for
+it: that repo scaffolds per-project memory architecture; this repo owns the reusable
+tool definitions themselves.
 
 Each skill lives under `skills/` as a self-contained folder (a `SKILL.md` at its
 root, plus any reference files it needs). Plugin packages live under `plugins/`.
 Custom subagent definitions live under `agents/` (see [agents/README.md](agents/README.md)).
-Hooks aren't centralized here yet — [hooks/README.md](hooks/README.md) indexes the
-ones that exist today (still deployed from `~/.claude/hooks/`) so the patterns are
-documented even before the code is vendored. Third-party skills are vendored here as
-flat copies; attribution and licensing for each are listed below.
+Hook scripts live under `hooks/` (see [hooks/README.md](hooks/README.md)) — same
+central-source-of-truth pattern as agents, deployed as a copy to `~/.claude/hooks/`;
+event/matcher registration stays in `~/.claude/settings.json`, not centralized. Third-
+party skills are vendored here as flat copies; attribution and licensing for each are
+listed below.
 
 ## Documentation
 

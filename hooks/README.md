@@ -1,13 +1,18 @@
 # Hooks
 
-Documentation-only, for now — **not yet a deployed folder** the way `skills/`,
-`plugins/`, and `agents/` are. The actual hook scripts still live in
-`~/.claude/hooks/`, registered in `~/.claude/settings.json`; this file is the index
-of what exists and why, so the patterns aren't invisible just because the code isn't
-centralized here yet. Full centralization (source-of-truth here, deploy = copy, the
-same shape `agents/` uses) is a flagged future round — see `.ai/PLAN.md`.
+Tracked centrally here the same way `skills/`, `plugins/`, and `agents/` are.
+`~/.claude/hooks/` is the deployed copy Claude Code actually reads; deploying is a
+straight file copy (no build step). Edit here, then re-copy — same "central source of
+truth, repo is a destination" pattern `agents/README.md` documents.
 
-## Current hooks (`~/.claude/hooks/`)
+**Registration is not centralized.** The event/matcher wiring (which hook fires on
+which `PreToolUse`/`PostToolUse`/`SessionStart`/`Stop` event) lives in
+`~/.claude/settings.json`'s `hooks: {...}` block, outside this repo — that file is a
+global, user-specific config with unrelated permissions/model settings mixed in. Adding
+a new hook script here doesn't register it; that's still a manual edit to
+`settings.json`.
+
+## Current hooks
 
 | Hook | Event / matcher | Behavior | Purpose |
 |------|------------------|----------|---------|

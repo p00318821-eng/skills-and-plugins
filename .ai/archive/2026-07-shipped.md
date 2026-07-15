@@ -1,5 +1,84 @@
 # Shipped — 2026-07
 
+## Round 4 — Hook/agent extraction (`memory-architect` + `rayfin-companion`, 2026-07-10, CLOSED 2026-07-15)
+
+Split both skills into skill + hook + agent pieces (see
+`.ai/rules/000-agent-operating-mandates.md` peer note in `project-memory-template`'s
+`.ai/rules/200-hook-authoring-conventions.md` for the authoring conventions this round
+produced), tested against real installs — global `~/.claude/settings.json` for
+`memory-architect`'s validation gate, both real Rayfin App projects
+(`fabric-apps/fabric-app-campus-profile`, `fabric-apps/fabric-app-student-profile`) for
+`rayfin-companion`'s hard-rules hooks. Branch
+`feat/memory-architecture/hook-agent-extraction-round`: 3 commits — `049d9b6` (the split
+itself), `9672a63` (merged `fix/github-mastery-protected-branch-guardrail`,
+protected-branch guardrail + `~/.claude/hooks/protect-branches.js`), `8014428` (merged
+`feat/deprecate-prepforai-global-hooks`, one hand-resolved `CHANGELOG.md` conflict).
+
+**Task queue (build order `0 → 5 → 2 → 1 → 3 → 7 → 8 → 4 → 6`), all now done:**
+1. Resync the global `memory-architect` copy — SHIPPED 2026-07-10. Added
+   `memory-architect` + `domain-modeling` to `destinations.json`'s `skills_assigned`;
+   verified byte-identical against repo source.
+2. Register `memory-architect` in `origins.json` — SHIPPED 2026-07-10, as an "own skill"
+   `excluded` entry, matching `github-mastery`'s pattern.
+3. Review `github-mastery` for remaining hook/agent opportunities — CLOSED 2026-07-15,
+   no action needed. `SKILL.md` already documents `protect-branches.js` as a
+   `PreToolUse` backstop and credential-leak prevention as a guardrail; both hooks
+   already exist in `~/.claude/hooks/`.
+5. Full consolidation phase — SHIPPED 2026-07-10. Added hook/agent scaffold templates to
+   `memory-architect/references/templates.md`; vendored `skills/domain-modeling/` from
+   upstream (forked to target `.ai/CONTEXT.md`/`.ai/adr/`, tracked in `origins.json`'s
+   `excluded` list like `caveman`); thinned `grill-with-docs/SKILL.md` to a delegator
+   matching upstream's real shape; `memory-architect` SCAFFOLD now offers
+   `.ai/CONTEXT.md`/`.ai/adr/` as an optional sibling tier. Flagged, not actioned:
+   `memory-architect`'s own templates scaffold `.ai/project/`+`.ai/memory/`, but this
+   repo (and `project-memory-template`) actually use `PLAN.md`+`rules/`+`archive/` —
+   real inconsistency, separate future task.
+7. Planning-phase skill fan-in hook design — `grill-me` unconditional, `grill-with-docs`
+   stage-gated (not repo-state-gated), `caveman` dropped, `ponytail` kept as a `grill-me`
+   peer. Formalizes a Plan Mode cycle: rough plan → verify → branch (trivial inline /
+   hard → record + loop back) → crystallize → execute.
+8. Skill-edit sync-check — global `PostToolUse` hook on `Edit|Write` warning
+   (non-blocking) when `file_path` falls under a hardcoded downstream root instead of
+   this repo.
+4. Pre-checkin environmental-sync gate — local hook stays fast/non-blocking; real
+   enforcement in a pre-push hook (decided); template owns rule *shape* one-way,
+   versioned; "traveling" = conformance manifest + thin comparison script, not live
+   hook code.
+6. Push/PR decision, deferred until tasks 1-2 landed — pushed held branches together.
+9. Vendor-fork tracking via SHA-based three-way diff — queued 2026-07-10, full detail in
+   `project-memory-template/.ai/PLAN.md`.
+10. Context-budget-aware planning — SHIPPED 2026-07-14 in `project-memory-template`
+    (new Tier 1 rule `.ai/rules/300-context-budget-planning.md`).
+
+## Round 5 — Central `agents/` + dispatch discipline (2026-07-15, CLOSED)
+
+Repo folder renamed `skills-plugins-hooks-agents` to reflect broadened scope: a
+**library of tools** (skills, plugins, agents, hooks-in-progress), consumed by
+`project-memory-template` as a component rather than a memory-scaffolding replacement.
+Added `agents/Explore.md` (override of the built-in Explore, pinned to `model: haiku` —
+Claude Code v2.1.198+ has built-in Explore inherit the parent session's model, so on
+Opus/Fable sessions every dispatch ran at premium cost until pinned) and
+`agents/scout.md` (bounded doc/web researcher, `maxTurns: 15`, the gap Explore doesn't
+cover). Verdict on Superpowers/ECC integration: borrow, don't install — both largely
+duplicate machinery this repo's memory architecture already provides (plan mode +
+`grill-me`, `.ai/PLAN.md` ring buffer + `memory-architect`, branch-lifecycle hooks);
+installing either would contend for control of every session. Borrowed patterns
+instead: fresh-subagent-per-task with two-stage review (Superpowers), model routing +
+iterative retrieval + MCP-context frugality (ECC). Deployed to `~/.claude/agents/` —
+first file in a previously-empty dir needed a session restart before pickup (watcher
+limitation, verified against docs) — **verified working post-restart 2026-07-15**
+(dispatched both `Explore` and `scout`, both returned correctly bounded results).
+GitHub repo renamed `p00318821-eng/skills-and-plugins` →
+`p00318821-eng/skills-plugins-hooks-agents` (user-confirmed, bundled into PR #12).
+Added `hooks/README.md` — a documentation-only index of the 6 hooks currently live in
+`~/.claude/hooks/` (branch protection, credential-leak guard, commit-convention
+advisory, two HISD context-injection hooks, memory-architect validation gate). Not yet
+centralized the way `agents/` is — the actual scripts still live outside the repo; full
+centralization (source-of-truth here, deploy = copy) is Round 6.
+
+PR #12 merged to `main` (`8c36a25`); local `main` fast-forwarded, feature branch deleted
+(local + remote).
+
 ## Round 2 — Notebook consolidation + memory-architecture tooling (2026-07-07)
 
 Merged three notebooks into `skills-workflow.ipynb` with a phase-selector widget;

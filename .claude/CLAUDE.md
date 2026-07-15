@@ -64,6 +64,11 @@ run in order. Phase logic lives in `scripts/`, the notebook is a thin UI shell.
   copying to `~/.claude/agents/`. No notebook phase covers this yet — it's a manual
   copy, same as "Add a destination manually" above. First file in a previously
   empty `~/.claude/agents/` requires a session restart to be picked up.
+- **Add/edit a hook:** Create or edit `hooks/{name}.js`, then deploy by copying to
+  `~/.claude/hooks/` (same manual-copy pattern as agents, no notebook phase). Adding a
+  new script here does not register it — event/matcher wiring is a separate manual
+  edit to `~/.claude/settings.json`'s `hooks: {...}` block, which stays outside this
+  repo (global, user-specific config).
 
 ## File Map
 
@@ -72,7 +77,7 @@ run in order. Phase logic lives in `scripts/`, the notebook is a thin UI shell.
 | `skills/` | Vendored skill folders (each: SKILL.md + references) |
 | `plugins/` | Plugin packages (azure-skills, deep-wiki, fabric, fabric-skills, powerbi, reports) |
 | `agents/` | Custom subagent definitions (central source of truth; `~/.claude/agents/` is the deployed copy) |
-| `hooks/` | Documentation-only index of active hooks (code still lives in `~/.claude/hooks/`; full centralization is a future round) |
+| `hooks/` | Hook scripts, central source of truth (`~/.claude/hooks/` is the deployed copy; registration lives in `~/.claude/settings.json`, not centralized) |
 | `manifests/origins.json` | Tracks where each skill is sourced from (v2 format) |
 | `manifests/destinations.json` | Tracks where skills get distributed to |
 | `skills-workflow.ipynb` | Single interactive notebook: Ingest → Update from source → Assign destinations → Distribute |
