@@ -25,6 +25,15 @@ def find_repo_root(start: Path | None = None) -> Path:
     raise FileNotFoundError("manifests/origins.json not found in CWD or any parent.")
 
 
+def validate_skill_name(name: str) -> str:
+    """Reject any name that isn't a single safe path component, so it can't
+    escape repo_root/"skills" when joined (an absolute operand overrides the
+    base entirely, and '..' segments walk out of it)."""
+    if not name or name in (".", "..") or "/" in name or "\\" in name:
+        raise ValueError(f"Unsafe skill name: {name!r}")
+    return name
+
+
 # ---------------------------------------------------------------------------
 # Scan / compare
 # ---------------------------------------------------------------------------
@@ -162,7 +171,7 @@ def apply_new_skill(
     if classification == "skip":
         return "skipped"
 
-    dst = repo_root / "skills" / skill_name
+    dst = repo_root / "skills" / validate_skill_name(skill_name)
     shutil.copytree(project_skill_dir, dst, dirs_exist_ok=True)
 
     if classification == "tracked":

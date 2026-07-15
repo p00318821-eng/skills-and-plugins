@@ -56,6 +56,16 @@ def resolve_path(template: str, repo_root: Path | None = None) -> Path:
     return Path(expanded)
 
 
+def validate_skill_name(name: str) -> str:
+    """Reject any manifest-sourced name that isn't a single safe path
+    component, so it can't escape the intended base directory when joined
+    with Path(base) / name (an absolute operand overrides the base entirely,
+    and '..' segments walk out of it)."""
+    if not name or name in (".", "..") or "/" in name or "\\" in name:
+        raise ValueError(f"Unsafe skill name in manifest: {name!r}")
+    return name
+
+
 def load_origins(repo_root: Path) -> dict:
     path = repo_root / "manifests" / "origins.json"
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -191,7 +201,7 @@ def copy_skill_folder(
 
     Returns: 'created', 'updated', or 'unchanged'.
     """
-    dest = target_dir / skill_name
+    dest = target_dir / validate_skill_name(skill_name)
 
     if not src_dir.is_dir():
         raise FileNotFoundError(f"Source skill folder not found: {src_dir}")
@@ -246,7 +256,11 @@ def distribute_folder_copy(
 
     per_skill: list[dict] = []
     for name in skills:
-        src = repo_root / "skills" / name
+        try:
+            src = repo_root / "skills" / validate_skill_name(name)
+        except ValueError as e:
+            per_skill.append({"name": name, "status": "error", "detail": str(e)})
+            continue
         try:
             status = copy_skill_folder(name, src, target_dir)
             per_skill.append({"name": name, "status": status})
