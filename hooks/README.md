@@ -22,6 +22,8 @@ a new hook script here doesn't register it; that's still a manual edit to
 | `hisd-session-start.js` | `SessionStart` | Injects a pointer to `~/.claude/skills/semantic-modeling-prepforai/references/hisd-power-bi-context.md` | HISD-specific Power BI/Fabric naming/synonym conventions reach any semantic-model work regardless of which skill drives it |
 | `hisd-tmdl-reminder.js` | `PostToolUse` (`Edit\|Write`) | Injects the same HISD context after edits to `.tmdl` files | Same goal as above, fired at edit time instead of session start |
 | `memory-architect-validation-gate.js` | `Stop` | Validates `.ai/` scaffolding conventions at session end | Backs the `memory-architect` skill's structural rules |
+| `suggest-planning-skills.js` | `PreToolUse` (`EnterPlanMode`) | **Warns only** (`additionalContext`) with relevant planning skills based on cheap file/dir presence checks (`.ai/`, `.pbip`/`.tmdl`, `.bicep`/`.tf`) | Lightweight fan-in nudge so planning-phase skills (`grill-me`, `memory-architect`, `fabric-skills`, etc.) aren't missed just because the agent didn't think to look |
+| `check-upstream-sync.js` | `PostToolUse` (`Edit\|Write`) | **Warns only** (`additionalContext`) when an edit lands in a downstream install copy (`~/.claude/skills`, `~/.claude/hooks`, `~/.claude/agents`, `~/.agents/skills`, `~/.copilot/skills`, `~/.github/copilot-instructions.md`) without a matching change here | Catches exactly the mistake that motivated it: a fix patched into a downstream copy that never makes it back to this repo, so it's lost on the next resync |
 
 ## Design pattern
 
