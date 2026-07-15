@@ -1,4 +1,4 @@
-# Plan — skills-and-plugins
+# Plan — skills-plugins-hooks-agents
 
 > Active/current state. Capped at 150 lines — archive older entries to `.ai/archive/`.
 
@@ -18,11 +18,17 @@
   `grill-me`, `.ai/PLAN.md` ring buffer + `memory-architect`, branch-lifecycle
   hooks); installing either would contend for control of every session. Borrowed
   patterns instead: fresh-subagent-per-task with two-stage review (Superpowers),
-  model routing + iterative retrieval + MCP-context frugality (ECC). Deploy target
-  `~/.claude/agents/` doesn't exist yet — first file requires a session restart to
-  be picked up (watcher limitation, verified against docs). GitHub repo itself is
-  still named `skills-and-plugins`; renaming it is a separate, explicitly-confirmed
-  step (shared-resource action), not bundled into this round.
+  model routing + iterative retrieval + MCP-context frugality (ECC). Deployed to
+  `~/.claude/agents/` — first file in a previously-empty dir, so a session restart
+  is needed before it's picked up (watcher limitation, verified against docs).
+  GitHub repo renamed `p00318821-eng/skills-and-plugins` →
+  `p00318821-eng/skills-plugins-hooks-agents` (user-confirmed, bundled into PR #12).
+  Added `hooks/README.md` — a documentation-only index of the 6 hooks currently
+  live in `~/.claude/hooks/` (branch protection, credential-leak guard, commit-
+  convention advisory, two HISD context-injection hooks, memory-architect
+  validation gate). Not yet centralized the way `agents/` is — the actual scripts
+  still live outside the repo; full centralization (source-of-truth here, deploy =
+  copy) remains a flagged future round.
 - **Round 3 — Deprecate `semantic-modeling-prepforai` + global HISD hooks +
   memory-architect defect fix, 2026-07-10 — SHIPPED, live-session hook
   verification CONFIRMED (2026-07-10).** A skill comparison exercise found 3 of 6 comparable

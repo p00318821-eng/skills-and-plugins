@@ -10,8 +10,10 @@ memory architecture; this repo owns the reusable tool definitions themselves.
 Each skill lives under `skills/` as a self-contained folder (a `SKILL.md` at its
 root, plus any reference files it needs). Plugin packages live under `plugins/`.
 Custom subagent definitions live under `agents/` (see [agents/README.md](agents/README.md)).
-Third-party skills are vendored here as flat copies; attribution and licensing
-for each are listed below.
+Hooks aren't centralized here yet — [hooks/README.md](hooks/README.md) indexes the
+ones that exist today (still deployed from `~/.claude/hooks/`) so the patterns are
+documented even before the code is vendored. Third-party skills are vendored here as
+flat copies; attribution and licensing for each are listed below.
 
 ## Documentation
 

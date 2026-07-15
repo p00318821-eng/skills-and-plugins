@@ -72,6 +72,7 @@ run in order. Phase logic lives in `scripts/`, the notebook is a thin UI shell.
 | `skills/` | Vendored skill folders (each: SKILL.md + references) |
 | `plugins/` | Plugin packages (azure-skills, deep-wiki, fabric, fabric-skills, powerbi, reports) |
 | `agents/` | Custom subagent definitions (central source of truth; `~/.claude/agents/` is the deployed copy) |
+| `hooks/` | Documentation-only index of active hooks (code still lives in `~/.claude/hooks/`; full centralization is a future round) |
 | `manifests/origins.json` | Tracks where each skill is sourced from (v2 format) |
 | `manifests/destinations.json` | Tracks where skills get distributed to |
 | `skills-workflow.ipynb` | Single interactive notebook: Ingest → Update from source → Assign destinations → Distribute |
