@@ -1,9 +1,34 @@
-# Plan — skills-and-plugins
+# Plan — skills-plugins-hooks-agents
 
 > Active/current state. Capped at 150 lines — archive older entries to `.ai/archive/`.
 
 ## Active Goals
 
+- **Round 5 — Central `agents/` + dispatch discipline, 2026-07-15 —
+  IN PROGRESS.** Repo folder renamed `skills-plugins-hooks-agents` to reflect
+  broadened scope: a **library of tools** (skills, plugins, agents, and — future
+  round — hooks), consumed by `project-memory-template` as a component rather than
+  a memory-scaffolding replacement. Added `agents/Explore.md` (override of the
+  built-in Explore, pinned to `model: haiku` — Claude Code v2.1.198+ has built-in
+  Explore inherit the parent session's model, so on Opus/Fable sessions every
+  dispatch ran at premium cost until pinned) and `agents/scout.md` (bounded
+  doc/web researcher, `maxTurns: 15`, the gap Explore doesn't cover). **Verdict on
+  Superpowers/ECC integration: borrow, don't install** — both largely duplicate
+  machinery this repo's memory architecture already provides (plan mode +
+  `grill-me`, `.ai/PLAN.md` ring buffer + `memory-architect`, branch-lifecycle
+  hooks); installing either would contend for control of every session. Borrowed
+  patterns instead: fresh-subagent-per-task with two-stage review (Superpowers),
+  model routing + iterative retrieval + MCP-context frugality (ECC). Deployed to
+  `~/.claude/agents/` — first file in a previously-empty dir, so a session restart
+  is needed before it's picked up (watcher limitation, verified against docs).
+  GitHub repo renamed `p00318821-eng/skills-and-plugins` →
+  `p00318821-eng/skills-plugins-hooks-agents` (user-confirmed, bundled into PR #12).
+  Added `hooks/README.md` — a documentation-only index of the 6 hooks currently
+  live in `~/.claude/hooks/` (branch protection, credential-leak guard, commit-
+  convention advisory, two HISD context-injection hooks, memory-architect
+  validation gate). Not yet centralized the way `agents/` is — the actual scripts
+  still live outside the repo; full centralization (source-of-truth here, deploy =
+  copy) remains a flagged future round.
 - **Round 3 — Deprecate `semantic-modeling-prepforai` + global HISD hooks +
   memory-architect defect fix, 2026-07-10 — SHIPPED, live-session hook
   verification CONFIRMED (2026-07-10).** A skill comparison exercise found 3 of 6 comparable
@@ -38,15 +63,8 @@
   normally with no error surfaced (fail-open holds) — hook restored after.
   Distribution regression check (Phase 4 dry-run for this skill + one
   sibling) is still open — see plan file items 9-11.
-- **Round 2 — Notebook consolidation + memory-architecture tooling, 2026-07-07 —
-  SHIPPED.** Merged three notebooks into `skills-workflow.ipynb` with a
-  phase-selector widget; extracted `scripts/ingest_engine.py`/`update_engine.py`
-  to de-duplicate logic; built `scripts/compile_claude_md.py` and
-  `scripts/check_doc_links.py` (Python ports of the Standard's compile/sync-check
-  steps, since this repo has no Node toolchain). Ran a `memory-architect` AUDIT
-  that fixed several doc-hygiene gaps and generalized the skill itself
-  (language-agnostic SCAFFOLD step, new AUDIT dimension for migration
-  cleanliness). Round 1 (Hub-and-Spoke adoption) shipped 2026-07-02 — see
+- **Round 2 — Notebook consolidation + memory-architecture tooling — SHIPPED
+  2026-07-07.** Round 1 (Hub-and-Spoke adoption) shipped 2026-07-02. Both — see
   `.ai/archive/2026-07-shipped.md`.
 
 - **Round 4 — Hook/agent extraction (`memory-architect` + `rayfin-companion`),
@@ -139,7 +157,10 @@ its versioning scheme). Task 0 (this file) is done as of this edit.
 
 ## Resume Pointer
 
-**Active round is Round 4** (hook/agent extraction) — tasks 0, 5, 2, 1, 10 done
+**Active round is Round 5** (central `agents/` + dispatch discipline) — `agents/`
+folder created and populated, docs updated. Remaining: deploy to
+`~/.claude/agents/`, append dispatch protocol to global `~/.claude/CLAUDE.md`,
+update project memory, PR. Round 4 (hook/agent extraction) — tasks 0, 5, 2, 1, 10 done
 (10 shipped in `project-memory-template`, unordered/low-urgency). Next: task 3
 (review `github-mastery` for remaining hook/agent opportunities), per the
 build order above. Round 3 remains open in parallel and
