@@ -1,6 +1,6 @@
 {
   "format_version": 2,
-  "_comment": "Source-of-truth manifest for externally-sourced skills. Drives skills-workflow.ipynb's Phase 2 (update) and Phase 4 (distribute). 'last_synced_sha' is informational and is stamped by the notebook when an update is applied.",
+  "_comment": "Source-of-truth manifest for externally-sourced skills. Drives skills-workflow.ipynb's Phase 2 (update) and Phase 4 (distribute). 'last_synced_sha' is informational and is stamped by the notebook when an update is applied. 'forked: true' entries are intentionally-modified vendor forks: 'last_synced_sha' instead anchors a three-way diff (base vs upstream HEAD = genuine drift; local vs base = expected fork delta, never auto-applied) — see update_engine.py's module docstring.",
   "ignore": [
     ".git",
     ".github",
@@ -226,19 +226,37 @@
       "author": "Dietrich Gebert",
       "license": "MIT",
       "last_synced_sha": "14a0d79548d4de8fc2de95c1b94bb0de63a739d3"
-    }
-  ],
-  "excluded": [
+    },
     {
       "name": "caveman",
       "local": "skills/caveman",
-      "reason": "Locally modified to suit personal use; do not auto-update. (Origin: Matt Pocock, MIT.)"
+      "repo": "https://github.com/mattpocock/skills.git",
+      "branch": "main",
+      "subpath": "skills/productivity/caveman",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Matt Pocock",
+      "license": "MIT",
+      "forked": true,
+      "fork_reason": "Locally modified to suit personal use; do not auto-update. (Origin: Matt Pocock, MIT.)",
+      "last_synced_sha": "e3b90b5238f38cdea5996e16861dcae28ef52eda"
     },
     {
       "name": "domain-modeling",
       "local": "skills/domain-modeling",
-      "reason": "Locally modified; do not auto-update. (Origin: Matt Pocock, MIT — github.com/mattpocock/skills, skills/engineering/domain-modeling.) Forked 2026-07-10 to target .ai/CONTEXT.md / .ai/adr/ instead of upstream's root-level CONTEXT.md / docs/adr/, to stay inside this repo's .ai/ Standard; also added a rule to check for an existing HISD-glossary owner before adding a term. grill-with-docs (still tracked normally) delegates to this skill, matching upstream's own architecture."
-    },
+      "repo": "https://github.com/mattpocock/skills.git",
+      "branch": "main",
+      "subpath": "skills/engineering/domain-modeling",
+      "type": "skill",
+      "format": "skill-folder",
+      "author": "Matt Pocock",
+      "license": "MIT",
+      "forked": true,
+      "fork_reason": "Locally modified; do not auto-update. (Origin: Matt Pocock, MIT — github.com/mattpocock/skills, skills/engineering/domain-modeling.) Forked 2026-07-10 to target .ai/CONTEXT.md / .ai/adr/ instead of upstream's root-level CONTEXT.md / docs/adr/, to stay inside this repo's .ai/ Standard; also added a rule to check for an existing HISD-glossary owner before adding a term. grill-with-docs (still tracked normally) delegates to this skill, matching upstream's own architecture.",
+      "last_synced_sha": "ee8bae40062cd6b435073368ed0c540f48c35862"
+    }
+  ],
+  "excluded": [
     {
       "name": "pbi-visual-rendering",
       "local": "skills/pbi-visual-rendering",
