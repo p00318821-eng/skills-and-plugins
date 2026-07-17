@@ -430,7 +430,17 @@ qualifying ADR, same as `.ai/CONTEXT.md`.
 
 ## Agent SOPs
 
-<!-- TODO: Planning rules, consolidation triggers, standing conventions. -->
+<!-- TODO: standing planning/consolidation conventions for this repo. Starter
+pattern (generalize, don't copy verbatim) — split any named skill by whether the
+agent can actually invoke it:
+- Agent-invocable (via the `Skill` tool, proactively): skills without
+  `disable-model-invocation` in their SKILL.md frontmatter.
+- User-triggered only (agent should suggest, not silently assume it ran): skills
+  with `disable-model-invocation: true` — only a typed `/command` fires these.
+State explicitly that the SOP applies to ad hoc research/debugging, not only formal
+planning-mode sessions — a hook tied to `EnterPlanMode` alone won't cover inline
+diagnostic work. See project-memory-template-hisd's `.ai/PLAN.md` task 12 for the
+real incident this pattern comes from. -->
 
 ## Critical Gotchas
 

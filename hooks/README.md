@@ -12,6 +12,15 @@ global, user-specific config with unrelated permissions/model settings mixed in.
 a new hook script here doesn't register it; that's still a manual edit to
 `settings.json`.
 
+**Hooks deliberately have no `destinations-matrix.csv` row-shape.** Unlike skills
+(which distribute to `claude-code-user`, `cloud-agents`, `copilot-skills`, etc. —
+see `manifests/destinations.json`), a hook has exactly one real destination:
+`~/.claude/hooks/` on this machine. Claude Code's `settings.json` hook-wiring format
+has no `cloud-agents`/`copilot` equivalent to distribute to, and
+`check-upstream-sync.js` already catches tracked-vs-deployed drift for that single
+destination. A multi-column matrix would track a dimension that doesn't exist —
+revisit only if a second machine/profile is ever added.
+
 ## Current hooks
 
 | Hook | Event / matcher | Behavior | Purpose |
