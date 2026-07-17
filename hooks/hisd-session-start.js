@@ -11,7 +11,10 @@ try {
         "If working on an HISD/Houston ISD Power BI or Fabric semantic model this " +
         "session, read ~/.claude/skills/semantic-modeling-prepforai/references/" +
         "hisd-power-bi-context.md for HISD-specific naming/synonym conventions and " +
-        "AI-readiness templates.",
+        "AI-readiness templates. Platform-behavior uncertainty (Fabric internals, " +
+        "Rayfin behavior, Azure/Power BI semantics) routes through /microsoft-docs " +
+        "before reasoning from memory — applies to ad hoc debugging and research, " +
+        "not only formal planning passes.",
     },
   };
   process.stdout.write(JSON.stringify(output));

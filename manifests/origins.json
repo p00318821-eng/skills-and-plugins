@@ -21,6 +21,8 @@
       "format": "skill-folder",
       "author": "Matt Pocock",
       "license": "MIT",
+      "forked": true,
+      "fork_reason": "Removed disable-model-invocation so Claude Code can invoke this directly via the Skill tool, not only as a user-typed /command; upstream behavior/content otherwise unmodified.",
       "last_synced_sha": "66898f60e8c744e269f8ce06c2b2b99ce7660d5f"
     },
     {
@@ -33,6 +35,8 @@
       "format": "skill-folder",
       "author": "Matt Pocock",
       "license": "MIT",
+      "forked": true,
+      "fork_reason": "Removed disable-model-invocation so Claude Code can invoke this directly via the Skill tool, not only as a user-typed /command; upstream behavior/content otherwise unmodified.",
       "last_synced_sha": "66898f60e8c744e269f8ce06c2b2b99ce7660d5f"
     },
     {
