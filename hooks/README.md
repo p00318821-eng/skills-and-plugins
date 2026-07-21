@@ -34,6 +34,7 @@ revisit only if a second machine/profile is ever added.
 | `memory-architect-validation-gate.js` | `Stop` | Validates `.ai/` scaffolding conventions at session end | Backs the `memory-architect` skill's structural rules |
 | `suggest-planning-skills.js` | `PreToolUse` (`EnterPlanMode`) | **Warns only** (`additionalContext`) with relevant planning skills based on cheap file/dir presence checks (`.ai/`, `.pbip`/`.tmdl`, `.bicep`/`.tf`) | Lightweight fan-in nudge so planning-phase skills (`grill-me`, `memory-architect`, `fabric-skills`, etc.) aren't missed just because the agent didn't think to look |
 | `check-upstream-sync.js` | `PostToolUse` (`Edit\|Write`) | **Warns only** (`additionalContext`) when an edit lands in a downstream install copy (`~/.claude/skills`, `~/.claude/hooks`, `~/.claude/agents`, `~/.agents/skills`, `~/.copilot/skills`, `~/.github/copilot-instructions.md`) without a matching change here | Catches exactly the mistake that motivated it: a fix patched into a downstream copy that never makes it back to this repo, so it's lost on the next resync |
+| `gate-plan-mode-skill-invocation.js` | `PreToolUse` (`ExitPlanMode`) | **Blocks** exiting plan mode unless an allow-listed planning skill (`grill-me`, `grill-with-docs`, `ponytail`, `microsoft-docs`, `memory-architect`) was invoked via the Skill tool this session (scanned from the transcript); on allow, attaches an `additionalContext` reminder to durably record plan-round state before a `/compact` can follow | Makes plan-mode skill invocation deterministic instead of description-hint-based — real incidents (`suggest-planning-skills.js`'s own admitted lack of signal, `grill-me`/`grill-with-docs` accidentally left unreachable, an agent silently assuming `/caveman` ran) showed advisory nudges alone don't work. Blocking here is a deliberate, documented exception to the blocking bar below — see `project-memory-template-hisd/.ai/rules/500-planning-skill-fan-in.md` |
 
 ## Design pattern
 
@@ -44,6 +45,9 @@ revisit only if a second machine/profile is ever added.
   credential leaks) where a violation is unambiguous and cheap to check. Everything
   softer (style, staleness, conventions) stays advisory via `additionalContext`,
   never a hard deny — see `enforce-commit-conventions.js` for the rationale.
+  `gate-push-rule-manifest.js` and `gate-plan-mode-skill-invocation.js` are two
+  deliberate, documented exceptions to this bar — see each hook's own row above and
+  header comment for its specific justification.
 - **Systemic over per-skill.** These fire regardless of which skill or agent issued
   the triggering tool call, rather than relying on each skill to remember to
   self-enforce the same rule.
