@@ -1,5 +1,21 @@
 # Shipped — 2026-07
 
+## Round 6 — Hooks migration (2026-07-15, CLOSED — PR #13 merged `a8e61f2`)
+
+Copied all 6 `~/.claude/hooks/*.js` scripts (`protect-branches.js`,
+`guard-credential-leak.js`, `enforce-commit-conventions.js`, `hisd-session-start.js`,
+`hisd-tmdl-reminder.js`, `memory-architect-validation-gate.js`) into this repo's
+`hooks/` folder as source of truth, verified byte-identical before and after the copy.
+`~/.claude/hooks/` is now the deployed copy — same manual-copy pattern as `agents/`
+(Round 5), no notebook phase. Registration (`~/.claude/settings.json`'s
+`hooks: {...}` block, event/matcher wiring) deliberately stays outside the repo —
+that file is global, user-specific config unrelated to tool definitions. Updated
+`hooks/README.md`, `.claude/CLAUDE.md` (File Map row + new "Add/edit a hook" Agent
+SOPs bullet), and root `README.md` to describe hooks as centrally tracked, matching
+skills/plugins/agents. `py scripts/check_doc_links.py` showed no new issues (all
+findings pre-existing, confined to vendored `plugins/`/`skills/` content). Feature
+branch `feat/hooks-migration` deleted (local + remote) after merge.
+
 ## Round 4 — Hook/agent extraction (`memory-architect` + `rayfin-companion`, 2026-07-10, CLOSED 2026-07-15)
 
 Split both skills into skill + hook + agent pieces (see

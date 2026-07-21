@@ -4,14 +4,9 @@
 
 ## Active Goals
 
-- **Round 6 — Hooks migration, 2026-07-15 — shipped in this repo, PR pending.**
-  Copied all 6 `~/.claude/hooks/*.js` scripts into this repo's `hooks/` folder as
-  source of truth (verified byte-identical before/after); `~/.claude/hooks/` is now
-  the deployed copy, same manual-copy pattern as `agents/` (no notebook phase).
-  Updated `hooks/README.md`, `.claude/CLAUDE.md` (File Map + new "Add/edit a hook"
-  Agent SOPs bullet), and `README.md` to describe hooks as centrally tracked.
-  Registration (`~/.claude/settings.json`'s `hooks: {...}` block) stays outside the
-  repo, deliberately not centralized.
+- **Round 6 — Hooks migration — SHIPPED 2026-07-15** (PR #13 merged `a8e61f2`,
+  `hooks/` is now the source of truth for all 6 hook scripts, `~/.claude/hooks/`
+  is the deployed copy). Full detail in `.ai/archive/2026-07-shipped.md`.
 - **Round 5 — Central `agents/` + dispatch discipline — SHIPPED 2026-07-15**
   (PR #12 merged `8c36a25`, GitHub repo renamed `skills-plugins-hooks-agents`,
   deployed agents verified working). Full detail in
@@ -73,10 +68,9 @@
 
 ## Resume Pointer
 
-**Rounds 4 and 5 both CLOSED 2026-07-15** — see Active Goals above and
-`.ai/archive/2026-07-shipped.md` for full detail. **Active round is Round 6 —
-hooks migration** (not yet planned; see Active Goals above for scope). Round 3
-remains open in parallel and
+**Rounds 4, 5, and 6 all CLOSED 2026-07-15** — see Active Goals above and
+`.ai/archive/2026-07-shipped.md` for full detail. No round is currently active;
+next round not yet chosen. Round 3 remains open in parallel and
 unblocked by Round 4: re-run Phase 4 distribution for
 `semantic-modeling-prepforai` and one sibling skill (plan items 9-11), plus
 the trigger-avoidance smoke test (plan item 11). The plugin/skills
