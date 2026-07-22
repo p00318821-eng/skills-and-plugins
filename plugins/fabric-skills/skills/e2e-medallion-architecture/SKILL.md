@@ -1,14 +1,16 @@
 ---
 name: e2e-medallion-architecture
 description: >
-  Implement end-to-end Medallion Architecture (Bronze/Silver/Gold) lakehouse patterns
-  in Microsoft Fabric using PySpark, Delta Lake, and Fabric Pipelines. Use when the user
-  wants to: (1) design a Bronze/Silver/Gold data lakehouse, (2) set up multi-layer
-  workspace with lakehouses for each tier, (3) build ingestion-to-analytics pipelines
-  with data quality enforcement, (4) optimize Spark configurations per medallion layer,
-  (5) orchestrate Bronze-to-Silver-to-Gold flows via notebooks. Triggers: "medallion architecture",
+  Plan and implement end-to-end Microsoft Fabric data platforms and Medallion Architecture (Bronze/Silver/Gold)
+  lakehouse patterns using PySpark, Delta Lake, Lakehouse/Warehouse items, Fabric Pipelines, and semantic-model handoff.
+  Use when the user wants to: (1) design a Bronze/Silver/Gold data lakehouse, (2) plan an ingestion-to-semantic-model Fabric data platform,
+  (3) set up multi-layer workspaces with lakehouses for each tier, (4) build ingestion-to-analytics pipelines with data quality enforcement,
+  (5) orchestrate Bronze-to-Silver-to-Gold flows via notebooks. For natural-language business questions over existing Power BI report data, use `fabriciq`.
+  Triggers: "medallion architecture",
   "bronze silver gold", "lakehouse layers", "e2e data pipeline", "end-to-end lakehouse",
-  "data lakehouse pattern", "multi-layer lakehouse", "build medallion", "setup medallion".
+  "data lakehouse pattern", "multi-layer lakehouse", "build medallion", "setup medallion",
+  "end-to-end Fabric data platform", "bronze silver gold platform",
+  "ingestion semantic model platform".
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**

@@ -1,7 +1,7 @@
 {
   "name": "reports",
-  "version": "26.25",
-  "description": "Build, format, and review Power BI reports (PBIR).",
+  "version": "26.29.1",
+  "description": "Build, format, optimize, and review interactive Power BI reports.",
   "author": {
     "name": "Kurt Buhler",
     "url": "https://data-goblins.com"

@@ -3,18 +3,19 @@ name: spark-operations-cli
 description: >
   Diagnose failed Spark jobs, unhealthy Livy sessions,
   and performance bottlenecks in Microsoft Fabric via read-only CLI triage.
+  Use ONLY for FAILED/unhealthy runs; running a notebook and reporting its success status is
+  `spark-authoring-cli`.
   Use when the user wants to: (1) diagnose why a Spark job, notebook run, or Lakehouse job failed,
   (2) triage stuck or dead Livy sessions, (3) identify OOM, shuffle spill, or data skew,
-  (4) retrieve driver and executor logs or Spark Advisor findings,
+  (4) retrieve driver/executor logs or Spark Advisor findings,
   (5) copy event logs and start a local Spark History Server,
-  (6) diagnose all Spark activities within a failed pipeline run.
+  (6) diagnose Spark activities in a failed pipeline run.
   Triggers: "diagnose my failed notebook", "why did my spark job fail",
   "triage spark failure", "diagnose pipeline run failure", "why did my pipeline fail",
   "livy session stuck in starting", "spark executor OOM",
   "check spark advisor findings", "shuffle spill diagnosis",
   "why did my lakehouse job fail", "diagnose lakehouse table load",
-  "data skew diagnosis", "open spark history server locally",
-  "analyze spark failure logs", "spark job triage".
+  "data skew diagnosis", "open spark history server locally", "spark job triage".
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**

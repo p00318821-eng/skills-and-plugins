@@ -5,7 +5,8 @@ description: >
   via CLI. Default skill for any lakehouse data query (row counts, SELECT, filtering, aggregation) unless the user
   explicitly requests PySpark or Spark DataFrames. Use when the user wants to: (1) query warehouse/lakehouse data,
   (2) count rows or explore lakehouse tables, (3) discover schemas/columns, (4) generate T-SQL scripts,
-  (5) monitor SQL performance, (6) export results to CSV/JSON.
+  (5) monitor SQL performance, (6) export results to CSV/JSON. For a Fabric notebook cell (%%sql or
+  other notebook magics), use `spark-authoring-cli`, not this skill.
   Triggers: "warehouse", "SQL query", "T-SQL", "query warehouse", "show warehouse tables",
   "show lakehouse tables", "query lakehouse", "lakehouse table", "how many rows", "count rows",
   "SQL endpoint", "describe warehouse schema", "generate T-SQL script", "warehouse performance",

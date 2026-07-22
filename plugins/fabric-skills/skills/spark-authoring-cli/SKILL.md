@@ -1,18 +1,18 @@
 ---
 name: spark-authoring-cli
 description: >
-  Develop Microsoft Fabric Spark/data engineering workflows and write code in Fabric Notebook cells
-  with intelligent routing to specialized resources. Provides workspace/lakehouse management, notebook
-  code authoring (PySpark, Scala, SparkR, SQL), and Materialized Lake View (MLV) authoring
-  (Spark SQL MLVs support incremental refresh; PySpark is full-refresh only). Routes to data
-  engineering patterns, development workflow, or infrastructure orchestration.
-  Triggers: "develop notebook", "data engineering", "workspace setup", "pipeline design",
-  "Delta Lake patterns", "Spark development", "lakehouse configuration",
-  "write notebook code", "notebookutils", "notebook cell", "PySpark notebook",
-  "%%sql cell", "%%configure", "fabric notebook", "run notebook", "notebook deployment",
-  "materialized lake view", "MLV", "CREATE MATERIALIZED LAKE VIEW",
-  "MLV incremental refresh", "review MLV for incremental refresh", "MLV refresh policy",
-  "infrastructure provisioning"
+  Author Fabric notebook cell code; run a notebook by name and report its status; and author/create
+  Materialized Lake View (MLV) definitions (CREATE MATERIALIZED LAKE VIEW).
+  Use for writing notebook cell code (PySpark, Scala, SparkR, %%sql, %%configure) — a %%sql cell that
+  queries a lakehouse is authoring, not a T-SQL query — and running a notebook via the Jobs API
+  (RunNotebook), including on the success path.
+  Not for Livy sessions or ad-hoc calculations (use `spark-consumption-cli`); to refresh/schedule an
+  EXISTING MLV, use `mlv-operations-cli`; for plain T-SQL, use `sqldw-consumption-cli`; for a FAILED
+  notebook/job, use `spark-operations-cli`.
+  Triggers: "write notebook code", "notebook cell code", "%%sql cell", "run the notebook named",
+  "run notebook", "execute notebook", "notebookutils", "PySpark notebook", "%%configure",
+  "create a materialized lake view", "create MLV", "materialized lake view", "MLV",
+  "CREATE MATERIALIZED LAKE VIEW", "MLV incremental refresh"
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**
@@ -137,6 +137,8 @@ This skill covers two complementary areas: (1) **managing Fabric Spark artifacts
 - **Avoid immediate POST retries on failures** — Check for existing/active jobs first to prevent duplicates
 - **Don't create new runs if monitoring existing job** — One job at a time; wait for completion before submitting new runs
 - **Don't hardcode workspace/lakehouse IDs** — Discover dynamically via item listing or catalog search APIs
+- **Own `%%sql` notebook cells here, do not defer to `sqldw-consumption-cli`** — a request to "write a %%sql cell" (or any notebook magic cell) is notebook-cell authoring even when the cell queries a lakehouse table. Only route to `sqldw-consumption-cli` when the user wants a plain T-SQL query executed against a SQL endpoint, not a notebook cell.
+- **Own "run/execute the notebook named X" here** — running a Fabric notebook by name is notebook execution via the Jobs API (`RunNotebook`), which belongs to this skill; do not defer to `spark-consumption-cli` (that skill is only for ad-hoc Livy session code execution).
 - **Do NOT use Lakehouse Livy sessions to run a Fabric notebook** — Lakehouse Livy sessions (the public Livy API) are for ad-hoc interactive Spark code execution. To run a notebook as a job, use the Jobs API (`RunNotebook`) which creates a Notebook Spark session internally. See SPARK-AUTHORING-CORE.md § Notebook Execution & Job Management
 - **Do NOT schedule MLV refreshes from notebooks** — If the user asks to "schedule MLV refresh", route to [mlv-operations-cli](../mlv-operations-cli/SKILL.md) which uses the REST API. Notebook-based `REFRESH MATERIALIZED LAKE VIEW ... FULL` is for one-time manual refresh only, not recurring schedules.
 
@@ -156,6 +158,50 @@ This skill covers two complementary areas: (1) **managing Fabric Spark artifacts
 >
 > **Rule 4 — For notebook code authoring, MUST follow SPARK-NOTEBOOK-AUTHORING-CORE.md.**
 > When writing code inside notebook cells, MUST read [SPARK-NOTEBOOK-AUTHORING-CORE.md](../../common/SPARK-NOTEBOOK-AUTHORING-CORE.md) first — it defines the code generation approach, rules, and a Module Index linking to detailed guides (lakehouse paths, connections, context, orchestration, etc.). Use the Spark-specific resources in this skill ([data-engineering-patterns.md](resources/data-engineering-patterns.md), [development-workflow.md](resources/development-workflow.md)) for Spark-only implementation details. When the task is about Materialized Lake Views, read [materialized-lake-view-patterns.md](resources/materialized-lake-view-patterns.md) for authoring/design guidance and [mlv-incremental-refresh-patterns.md](resources/mlv-incremental-refresh-patterns.md) for refresh-readiness analysis.
+
+---
+
+## Notebook Codegen Quick Rules
+
+Quick reference for common notebook-authoring tasks. The shared `common/notebook-authoring/` core (see Rule 4 / [SPARK-NOTEBOOK-AUTHORING-CORE.md](../../common/SPARK-NOTEBOOK-AUTHORING-CORE.md)) is authoritative; if these ever differ, follow the common core.
+
+| User asks for | Required output pattern |
+|---|---|
+| `%%sql` / cross-lakehouse query cell | Return a Fabric notebook `%%sql` cell. Include the named workspace/lakehouse/schema/table in the code or explanatory note. This is notebook authoring, not interactive Spark consumption. |
+| Pipeline context detection | Use `notebookutils.runtime.context`; include `isForPipeline = context["isForPipeline"]` and read `context["currentWorkspaceId"]`. |
+| Built-in notebook resource files with Spark | Use `notebookutils.nbResPath`, `builtin/`, and the `file:` prefix: `spark.read.json(f"file:{notebookutils.nbResPath}/builtin/config.json")`. Spark and `notebookutils.fs` require `file:` for resource-folder local paths. |
+| Fabric connections | Use `notebookutils.connections.getCredential("{connectionId}")` directly and show a compact code sample. Do not web-search; keep the answer under the tool/turn budget. |
+
+### Minimal snippets
+
+```python
+# Pipeline context
+context = notebookutils.runtime.context
+isForPipeline = context["isForPipeline"]
+workspace_id = context["currentWorkspaceId"]
+print(f"isForPipeline={isForPipeline}, workspace_id={workspace_id}")
+```
+
+```python
+# Spark read from notebook built-in resources
+config_df = spark.read.option("multiline", "true").json(
+    f"file:{notebookutils.nbResPath}/builtin/config.json"
+)
+display(config_df)
+```
+
+```python
+# PostgreSQL through a Fabric connection (fill in connectionId and host/db)
+import psycopg2
+
+credential = notebookutils.connections.getCredential("{connectionId}")
+conn = psycopg2.connect(
+    host="<postgres-host>",
+    database="<database>",
+    user=credential["username"],
+    password=credential["password"],
+)
+```
 
 ---
 

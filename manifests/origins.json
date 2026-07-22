@@ -85,7 +85,7 @@
       "format": "skill-folder",
       "author": "Eoghan Henn / rebelytics.com",
       "license": "CC BY 4.0",
-      "last_synced_sha": null
+      "last_synced_sha": "281f13466cd3a73e9ebc9d210907748e1941a3dd"
     },
     {
       "name": "fabric-skills",
@@ -97,7 +97,7 @@
       "format": "plugin-package",
       "author": "Microsoft",
       "license": "MIT",
-      "last_synced_sha": "b961296e97a89a39e81e10501c2ef846ad0c54db"
+      "last_synced_sha": "16903b068f9a7e0180d701f158465f53cd2110ba"
     },
     {
       "name": "powerbi-plugin",
@@ -133,7 +133,7 @@
       "format": "plugin-package",
       "author": "data-goblin",
       "license": "MIT",
-      "last_synced_sha": "7de813c1a531da4f62f3b2fcfaa68a096423be5b"
+      "last_synced_sha": "7f2ea6a16c2c7db4c79a9128dad289d3b8db086f"
     },
     {
       "name": "microsoft-docs",
@@ -181,7 +181,7 @@
       "format": "plugin-package",
       "author": "Microsoft",
       "license": "MIT",
-      "last_synced_sha": "40d0f6008a3759c1bfaa6b654cbd3c3b4b580ef6"
+      "last_synced_sha": "cc93536d8b809e177a7d1008b276ce41a9456a9c"
     },
     {
       "name": "deep-wiki",
@@ -257,7 +257,33 @@
       "license": "MIT",
       "forked": true,
       "fork_reason": "Locally modified; do not auto-update. (Origin: Matt Pocock, MIT — github.com/mattpocock/skills, skills/engineering/domain-modeling.) Forked 2026-07-10 to target .ai/CONTEXT.md / .ai/adr/ instead of upstream's root-level CONTEXT.md / docs/adr/, to stay inside this repo's .ai/ Standard; also added a rule to check for an existing HISD-glossary owner before adding a term. grill-with-docs (still tracked normally) delegates to this skill, matching upstream's own architecture.",
-      "last_synced_sha": "ee8bae40062cd6b435073368ed0c540f48c35862"
+      "last_synced_sha": "ed37663cc5fbef691ddfecd080dff42f7e7e350d"
+    },
+    {
+      "name": "subagent-catalog",
+      "local": "tools/subagent-catalog",
+      "repo": "https://github.com/VoltAgent/awesome-claude-code-subagents.git",
+      "branch": "main",
+      "subpath": "tools/subagent-catalog",
+      "type": "tool",
+      "format": "command-set",
+      "author": "VoltAgent",
+      "license": "MIT",
+      "last_synced_sha": "947b44ca0c58d606b084e9cb1a2389335b49278b"
+    },
+    {
+      "name": "language-specialist-agents",
+      "local": "agents",
+      "repo": "https://github.com/VoltAgent/awesome-claude-code-subagents.git",
+      "branch": "main",
+      "subpath": "categories/02-language-specialists",
+      "type": "agent",
+      "format": "agent-md",
+      "author": "VoltAgent",
+      "license": "MIT",
+      "forked": true,
+      "fork_reason": "Curated subset, not a full mirror: agents/ holds our own first-party agents (Explore.md, scout.md) alongside adopted picks from this upstream category (sql-pro.md, python-pro.md so far). Upstream files not yet copied here will always show up in fork_delta on every check — that's the intended 'available to mine' signal (browse categories/02-language-specialists for more candidates), not an error or missing sync. Adopt one by copying it into agents/ (optionally adapted); it then drops out of fork_delta and any subsequent upstream edit to it shows as genuine drift in added/modified.",
+      "last_synced_sha": "947b44ca0c58d606b084e9cb1a2389335b49278b"
     }
   ],
   "excluded": [

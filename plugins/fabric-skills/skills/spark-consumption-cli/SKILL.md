@@ -1,11 +1,16 @@
 ---
 name: spark-consumption-cli
 description: >
-  Analyze lakehouse data interactively using Fabric Lakehouse Livy API sessions and PySpark/Spark SQL for advanced analytics,
-  DataFrames, cross-lakehouse joins, Delta time-travel, and unstructured/JSON data. Use when the user explicitly
-  asks for PySpark, Spark DataFrames, Livy sessions, or Python-based analysis — NOT for simple SQL queries.
-  Triggers: "PySpark", "Spark SQL", "analyze with PySpark", "Spark DataFrame", "Livy session",
-  "lakehouse with Python", "PySpark analysis", "PySpark data quality", "Delta time-travel with Spark".
+  Interactive ad-hoc Spark analysis through Fabric Lakehouse Livy API sessions ONLY.
+  This skill NEVER authors or runs a notebook: any notebook cell (%%sql/%%configure) or a
+  notebook-run-by-name (and reporting its run status) is `spark-authoring-cli`, not this skill.
+  Scope: create a Livy session, execute PySpark, inspect output, and compute quick
+  calculations over lakehouse data (DataFrames, cross-lakehouse joins, Delta time-travel, unstructured/JSON).
+  For Spark failure triage use `spark-operations-cli`; for plain T-SQL Lakehouse/Warehouse queries use `sqldw-consumption-cli`.
+  Triggers: "create Livy session", "run Livy calculation", "Livy session calculation", "interactive Livy session",
+  "PySpark", "analyze with PySpark", "Spark DataFrame",
+  "lakehouse with Python", "PySpark data quality", "Delta time-travel with Spark",
+  "join tables across Lakehouses".
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**
@@ -85,6 +90,7 @@ description: >
 - Creating unnecessary sessions
 - Large result sets without LIMIT
 - **Confusing Lakehouse Livy sessions with Notebook Spark sessions** — This skill covers **Lakehouse Livy sessions** (the public Livy API at `/lakehouses/{lhId}/livyapi/.../sessions`). Notebook Spark sessions are created internally when running a notebook via the Jobs API (`RunNotebook`) and are NOT managed through the Livy API. To run a notebook as a job, see SPARK-AUTHORING-CORE.md § Notebook Execution & Job Management
+- **Writing or generating notebook cells** — prompts that ask for `%%sql`, `%%configure`, PySpark notebook cell code, notebook deployment, or notebook execution belong to `spark-authoring-cli`, even when the cell queries data.
 
 ---
 

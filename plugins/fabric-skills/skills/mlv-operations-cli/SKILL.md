@@ -1,19 +1,18 @@
 ---
 name: mlv-operations-cli
 description: >
-  Manage Microsoft Fabric Materialized Lake View (MLV) refresh schedules and job execution
-  via REST APIs. Create, update, and delete refresh schedules (interval-based: hourly, daily, weekly).
-  Trigger on-demand refreshes, monitor job status, and cancel running jobs. Uses human-in-the-loop
-  confirmations for safety. Materialized Lake Views are also known as Spark Materialized Views,
-  MLVs, or lakehouse materialized views in Fabric documentation.
+  Manage refresh schedules and job execution for an EXISTING Microsoft Fabric Materialized Lake
+  View (MLV) via REST APIs: create, update, and delete refresh schedules (interval-based: hourly,
+  daily, weekly), trigger on-demand refreshes, monitor job status, and cancel running jobs. Uses
+  human-in-the-loop confirmations for safety.
+  This skill does NOT author or create the MLV definition: writing the CREATE MATERIALIZED LAKE VIEW
+  / CREATE OR REPLACE SQL is `spark-authoring-cli`, not this skill.
   Note: MLV discovery (list MLVs, lineage, data quality) requires UI as REST APIs are not yet available.
-  Triggers: "schedule MLV refresh", "manage MLV", "MLV refresh schedule",
-  "schedule materialized lake view", "schedule materialized view",
+  Triggers: "schedule MLV refresh", "manage MLV refresh", "MLV refresh schedule",
+  "schedule materialized lake view refresh",
   "automate MLV refresh", "trigger MLV refresh", "monitor MLV refresh",
   "MLV job status", "cancel MLV refresh", "refresh schedule",
-  "MLV automation", "manage materialized lake view", "manage materialized view",
-  "materialized view refresh", "spark materialized view schedule",
-  "lakehouse materialized view", "refresh my materialized views"
+  "MLV automation", "refresh my materialized views"
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**

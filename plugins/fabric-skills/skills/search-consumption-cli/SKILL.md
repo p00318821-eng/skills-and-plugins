@@ -1,15 +1,15 @@
 ---
 name: search-consumption-cli
 description: >
-  Search the Microsoft Fabric catalog to find an item by name across all workspaces
-  when you don't know which workspace it is in, using the Fabric Catalog Search API.
-  Use when the user wants to: (1) search the catalog for an item by name across workspaces,
-  (2) discover or list items of a specific type across the tenant,
-  (3) identify which workspace contains an item,
-  (4) return item/workspace IDs for downstream API calls.
-  Triggers: "search for an item", "search the catalog", "catalog search",
-  "search Fabric for an item", "search for item", "find an item by name across workspaces",
-  "which workspace has", "discover items across the tenant".
+  Search the Microsoft Fabric catalog across workspaces using the Fabric Catalog Search API.
+  Use when the user wants to: (1) find an item by display name when the workspace is unknown,
+  (2) list or discover items of a specific type across the tenant, (3) identify which workspace
+  contains an item, (4) return item/workspace IDs for downstream API calls. Dataflow Gen1/Gen2
+  items are not supported. For data queries after the item is known, use the workload-specific
+  consumption skill (`sqldw-consumption-cli`, `spark-consumption-cli`, `eventhouse-consumption-cli`, or `fabriciq`).
+  Triggers: "catalog search", "fabric catalog search", "catalog lookup",
+  "cross workspace catalog", "tenant catalog discovery", "tenant catalog inventory",
+  "tenant catalog identifiers", "workspace catalog discovery".
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**
@@ -61,6 +61,7 @@ description: >
 ### AVOID
 
 - **Searching for workspaces** — the Catalog Search API returns items, not workspaces. Use `GET /v1/workspaces` instead (see [COMMON-CLI.md § Resolve Workspace Properties by Name](../../common/COMMON-CLI.md#resolve-workspace-properties-by-name)).
+- **Querying source data after the workspace/item is known** — route to the workload-specific consumption skill (`sqldw-consumption-cli`, `spark-consumption-cli`, `eventhouse-consumption-cli`, or `fabriciq`) instead of Catalog Search.
 - **Inventing filter syntax** — only `eq`, `ne`, `or`, and parentheses are supported.
 - **Assuming all item types are supported** — Dataflow (Gen1) and Dataflow (Gen2) are not returned yet.
 

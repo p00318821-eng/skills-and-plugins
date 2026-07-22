@@ -1,18 +1,16 @@
 ---
 name: dataflows-save-as-authoring-cli
 description: >
-  Assess, plan, and execute dataflow Gen1 → Gen2.1 CI/CD save-as operations via CLI
-  (az rest / curl) against Power BI REST and Fabric REST APIs. Scan workspaces or
-  entire tenants for Gen1 dataflows, evaluate save-as readiness with seven risk signals
-  (incremental refresh, BYOSA storage, Power Automate triggers, pipeline dependencies,
-  linked entities, DirectQuery, caller-not-owner), produce a Save-As Readiness Snapshot (markdown + JSON),
-  and invoke the SaveAsNativeArtifact API to create upgraded Gen2.1 copies of Gen1 dataflows.
-  **Invoke this skill** whenever the user wants to: (1) discover Gen1 dataflows in a workspace or tenant,
-  (2) assess save-as readiness and risk signals, (3) upgrade or migrate Gen1 into a Gen2.1 copy,
-  (4) validate post-save-as data integrity, (5) detect residual Gen1 references.
-  Triggers: "save Gen1 dataflow", "convert dataflow Gen1", "upgrade dataflow", "migrate dataflow",
-  "dataflow readiness", "Gen1 to Gen2", "dataflow save-as assessment", "saveAsNativeArtifact",
-  "dataflow save-as scan".
+  Copy, clone, duplicate, rebind, and execute Gen1 dataflow save-as upgrade operations via CLI
+  (az rest / curl) against Power BI REST and Fabric REST APIs. Covers Gen1 to Gen2.1 upgrade save-as,
+  cross-workspace Gen1-to-Gen2.1 copy flows, connection rebinding, output changes, readiness snapshots,
+  and SaveAsNativeArtifact execution. Use when the user wants to: (1) discover Gen1 dataflows,
+  (2) assess save-as readiness, (3) upgrade Gen1 into Gen2.1, (4) create a Gen2.1 copy from a Gen1 dataflow
+  in another workspace, (5) rebind connections or validate saved data. For creating/editing Gen2 dataflows from scratch,
+  previewing candidate M, binding ordinary authoring connections, or copying Gen2 dataflows, use `dataflows-authoring-cli`.
+  Triggers: "save Gen1 dataflow", "upgrade dataflow", "Gen1 Gen2 readiness", "Gen1 Gen2 save-as",
+  "saveAsNativeArtifact", "copy Gen1 dataflow", "duplicate Gen1 dataflow", "clone Gen1 dataflow",
+  "rebind Gen1 dataflow connections".
 ---
 
 > **Update Check — ONCE PER SESSION (mandatory)**

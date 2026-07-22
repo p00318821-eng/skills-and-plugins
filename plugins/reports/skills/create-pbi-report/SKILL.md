@@ -1,6 +1,5 @@
 ---
 name: create-pbi-report
-version: 26.25
 description: Step-by-step workflow for creating complete Power BI reports from scratch using pbir CLI. Covers model discovery, report creation, page layout, theme setup, visual placement, field binding, filtering, formatting, validation, and publishing. Automatically invoke when the user asks to "create a new report", "build a report from scratch", "make a dashboard", "set up a report with KPIs", "create an executive dashboard", "add pages and visuals to a new report".
 ---
 
@@ -36,7 +35,7 @@ When the user's request lacks specific measures, audience context, structural pr
     pbir new report "Name.Report" -c "Workspace/Model.SemanticModel"
     ```
 
-6. Rename the default page (do NOT add a new page unless the report needs multiple pages): `pbir pages rename "Name.Report/Page 1.Page" "Overview"`
+6. Rename the default page (do NOT add a new page unless the report needs multiple pages): `pbir pages rename "Name.Report/Page 1.Page" --to "Overview" -f`
 7. Only if the user requests a custom theme: `pbir theme apply-template "Name.Report" template-name` (the sqlbi theme is already included by default)
 8. Discover model fields: `pbir model "Name.Report" -d`
 9. Query field values for filters or formatting: `pbir model "Name.Report" -q "EVALUATE VALUES('Table'[Column])"`
@@ -117,7 +116,7 @@ sales-dashboard/
 The report comes with a default "Page 1" that already has a textbox for the page title. Rename it rather than creating a new page. Only add additional pages if needed.
 
 ```bash
-pbir pages rename "Sales.Report/Page 1.Page" "Overview"          # Rename default page
+pbir pages rename "Sales.Report/Page 1.Page" --to "Overview" -f  # Rename default page
 pbir add page "Sales.Report/Detail.Page" -n "Detail"              # Add extra pages only if needed
 pbir pages active-page "Sales.Report" "Overview"
 ```
@@ -203,6 +202,7 @@ For titles that react to slicer selections or change color with status, use a `_
 ```bash
 # Author a selection-aware title measure
 pbir dax measures add \
+  "Sales.Report" \
   -n "Title_Sales" \
   -e 'IF(ISFILTERED(Region[Region]), "Sales: " & SELECTEDVALUE(Region[Region], "multiple regions"), "Sales: all regions")' \
   -t _Report
