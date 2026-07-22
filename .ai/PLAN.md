@@ -4,6 +4,29 @@
 
 ## Active Goals
 
+- **Round 7 — Deterministic plan-mode skill-invocation gate — SHIPPED
+  2026-07-21** (PR #19 merged `5241994`). New `PreToolUse`/`ExitPlanMode`
+  hook (`hooks/gate-plan-mode-skill-invocation.js`) hard-blocks exiting plan
+  mode unless an allow-listed planning skill (`grill-me`, `grill-with-docs`,
+  `ponytail`, `microsoft-docs`, `memory-architect`) was invoked via the Skill
+  tool this session — replaces relying on the model to notice
+  `suggest-planning-skills.js`'s advisory nudge with a real enforcement
+  point. Second documented exception to `hooks/README.md`'s blocking bar,
+  alongside `gate-push-rule-manifest.js`. Allow path attaches a compact-prep
+  `additionalContext` reminder (don't jump into code before durably
+  recording plan-round state, since `/compact` may follow `ExitPlanMode`).
+  Handoff doc landed in `project-memory-template-hisd` (PR #14 merged
+  `9acb48a`) for its `memory-architect` CONSOLIDATE pass to fold into
+  `.ai/rules/500-planning-skill-fan-in.md`. **Open residual gap (accepted,
+  not solved):** the gate is coarse — any allow-listed skill satisfies it,
+  not necessarily the *right* one for the task (e.g. doesn't guarantee
+  `/microsoft-docs` ran when platform-behavior uncertainty was the actual
+  issue). **Also open:** live confirmation that `ExitPlanMode` actually
+  fires as a `PreToolUse` matcher in Claude Code wasn't forced this round
+  (would have required overwriting the approved plan file to test) — hook
+  logic itself (deny/allow/fail-open/non-match) was verified directly via
+  crafted stdin payloads; the matcher-firing question resolves itself the
+  next time any session completes a plan-mode cycle.
 - **Round 6 — Hooks migration — SHIPPED 2026-07-15** (PR #13 merged `a8e61f2`,
   `hooks/` is now the source of truth for all 6 hook scripts, `~/.claude/hooks/`
   is the deployed copy). Full detail in `.ai/archive/2026-07-shipped.md`.
@@ -68,9 +91,9 @@
 
 ## Resume Pointer
 
-**Rounds 4, 5, and 6 all CLOSED 2026-07-15** — see Active Goals above and
-`.ai/archive/2026-07-shipped.md` for full detail. No round is currently active;
-next round not yet chosen. Round 3 remains open in parallel and
+**Rounds 4, 5, 6, and 7 all CLOSED** (7 on 2026-07-21) — see Active Goals
+above and `.ai/archive/2026-07-shipped.md` for full detail. No round is
+currently active; next round not yet chosen. Round 3 remains open in parallel and
 unblocked by Round 4: re-run Phase 4 distribution for
 `semantic-modeling-prepforai` and one sibling skill (plan items 9-11), plus
 the trigger-avoidance smoke test (plan item 11). The plugin/skills
